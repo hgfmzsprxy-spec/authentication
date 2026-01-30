@@ -33,13 +33,15 @@ app.get('/api/debug/routes', (req, res) => {
 });
 
 // Session configuration
+// Use /tmp directory in Vercel (read-write), ./ locally
+const sessionDir = process.env.VERCEL ? '/tmp' : './';
 app.use(session({
-    store: new SQLiteStore({ db: 'sessions.db', dir: './' }),
+    store: new SQLiteStore({ db: 'sessions.db', dir: sessionDir }),
     secret: crypto.randomBytes(32).toString('hex'),
     resave: false,
     saveUninitialized: false,
     cookie: { 
-        secure: false, // Set to true if using HTTPS
+        secure: process.env.VERCEL ? true : false, // HTTPS in Vercel
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
@@ -98,11 +100,13 @@ app.use((req, res, next) => {
 });
 
 // Database initialization
-const db = new sqlite3.Database('./auth.db', (err) => {
+// Use /tmp directory in Vercel (read-write), ./ locally
+const dbPath = process.env.VERCEL ? '/tmp/auth.db' : './auth.db';
+const db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
         console.error('Error opening database:', err.message);
     } else {
-        console.log('Connected to SQLite database');
+        console.log(`Connected to SQLite database at ${dbPath}`);
         initializeDatabase();
     }
 });
@@ -4573,18 +4577,24 @@ app.use('/api', (req, res) => {
 app.use(express.static('auth'));
 app.use('/new-theme', express.static('auth/new-theme'));
 
-app.listen(PORT, () => {
-    console.log(`Auth server running on http://localhost:${PORT}`);
-});
-
-// Graceful shutdown
-process.on('SIGINT', () => {
-    db.close((err) => {
-        if (err) {
-            console.error(err.message);
-        }
-        console.log('Database connection closed.');
-        process.exit(0);
+// Only start server if not in Vercel (serverless environment)
+if (!process.env.VERCEL) {
+    app.listen(PORT, () => {
+        console.log(`Auth server running on http://localhost:${PORT}`);
     });
-});
+
+    // Graceful shutdown
+    process.on('SIGINT', () => {
+        db.close((err) => {
+            if (err) {
+                console.error(err.message);
+            }
+            console.log('Database connection closed.');
+            process.exit(0);
+        });
+    });
+}
+
+// Export app for Vercel serverless functions
+module.exports = app;
 

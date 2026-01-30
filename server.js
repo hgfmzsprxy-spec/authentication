@@ -92,16 +92,16 @@ function requireAuth(req, res, next) {
         return next();
     }
     // Allow access to login page and API auth endpoints
-    if (req.path === '/new-theme/login.html' || req.path === '/login.html' || 
+    if (req.path === '/login.html' || 
         req.path.startsWith('/api/auth/') || req.path === '/api/auth/login' || 
         req.path === '/api/auth/check-email' || req.path === '/api/auth/set-password') {
         return next();
     }
     // Redirect to login if accessing protected HTML pages
-    if ((req.path.startsWith('/new-theme/') || req.path.startsWith('/')) && 
-        (req.path.endsWith('.html') || req.path === '/new-theme/' || req.path === '/')) {
+    if (req.path.startsWith('/') && 
+        (req.path.endsWith('.html') || req.path === '/')) {
         if (!req.path.includes('login.html')) {
-            return res.redirect('/new-theme/login.html');
+            return res.redirect('/login.html');
         }
     }
     return next();
@@ -109,7 +109,7 @@ function requireAuth(req, res, next) {
 
 // Apply auth middleware to HTML pages
 app.use((req, res, next) => {
-    const isHtmlPage = req.path.endsWith('.html') || req.path === '/new-theme/' || req.path === '/';
+    const isHtmlPage = req.path.endsWith('.html') || req.path === '/';
     if (isHtmlPage && !req.path.includes('login.html')) {
         return requireAuth(req, res, next);
     }
@@ -4712,7 +4712,6 @@ app.use('/api', (req, res) => {
 // Use absolute path for Vercel compatibility
 const authPath = path.join(__dirname, 'auth');
 app.use(express.static(authPath));
-app.use('/new-theme', express.static(path.join(authPath, 'new-theme')));
 
 // Only start server if not in Vercel (serverless environment)
 if (!process.env.VERCEL) {

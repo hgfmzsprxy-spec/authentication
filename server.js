@@ -40,11 +40,12 @@ app.get('/api/debug/routes', (req, res) => {
 });
 
 // Session configuration
-// Use memory store in Vercel (sqlite3 doesn't work), SQLite store locally
+// In Vercel, use cookie-based sessions (no store) - cookies are sent with every request
+// Locally, use SQLite store
 const sessionConfig = {
     secret: process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex'),
-    resave: false,
-    saveUninitialized: false,
+    resave: process.env.VERCEL ? true : false, // Force save in Vercel (no store)
+    saveUninitialized: process.env.VERCEL ? true : false, // Save even uninitialized sessions in Vercel
     cookie: { 
         secure: process.env.VERCEL ? true : false, // HTTPS in Vercel
         httpOnly: true,
@@ -59,7 +60,6 @@ if (!process.env.VERCEL) {
     sessionConfig.store = new SQLiteStore({ db: 'sessions.db', dir: sessionDir });
 }
 // In Vercel, don't use a store - sessions will be stored in signed cookies
-// This works because cookies are sent with every request, so sessions persist across function invocations
 
 app.use(session(sessionConfig));
 
@@ -837,13 +837,7 @@ app.post('/api/auth/login', (req, res) => {
                             }
                             req.session.userId = newUser.id;
                             req.session.email = newUser.email;
-                            req.session.save((err) => {
-                                if (err) {
-                                    console.error('Error saving session:', err);
-                                    return res.status(500).json({ success: false, error: 'Session error' });
-                                }
-                                return res.json({ success: true, user: { id: newUser.id, email: newUser.email } });
-                            });
+                            return res.json({ success: true, user: { id: newUser.id, email: newUser.email } });
                         });
                     } else {
                         return res.status(401).json({ success: false, error: 'Invalid email or password' });
@@ -869,13 +863,7 @@ app.post('/api/auth/login', (req, res) => {
                     if (inputPasswordHash === correctPasswordHash) {
                         req.session.userId = user.id;
                         req.session.email = user.email;
-                        req.session.save((err) => {
-                            if (err) {
-                                console.error('Error saving session:', err);
-                                return res.status(500).json({ success: false, error: 'Session error' });
-                            }
-                            return res.json({ success: true, user: { id: user.id, email: user.email } });
-                        });
+                        return res.json({ success: true, user: { id: user.id, email: user.email } });
                     } else {
                         return res.status(401).json({ success: false, error: 'Invalid email or password' });
                     }
@@ -887,14 +875,7 @@ app.post('/api/auth/login', (req, res) => {
             if (inputPasswordHash === correctPasswordHash) {
                 req.session.userId = user.id;
                 req.session.email = user.email;
-                // Save session before sending response
-                req.session.save((err) => {
-                    if (err) {
-                        console.error('Error saving session:', err);
-                        return res.status(500).json({ success: false, error: 'Session error' });
-                    }
-                    return res.json({ success: true, user: { id: user.id, email: user.email } });
-                });
+                return res.json({ success: true, user: { id: user.id, email: user.email } });
             } else {
                 return res.status(401).json({ success: false, error: 'Invalid email or password' });
             }
@@ -926,14 +907,7 @@ app.post('/api/auth/login', (req, res) => {
         req.session.userId = user.id;
         req.session.email = user.email;
         
-        // Save session before sending response
-        req.session.save((err) => {
-            if (err) {
-                console.error('Error saving session:', err);
-                return res.status(500).json({ success: false, error: 'Session error' });
-            }
-            return res.json({ success: true, message: 'Login successful' });
-        });
+        return res.json({ success: true, message: 'Login successful' });
     });
 });
 
@@ -974,14 +948,7 @@ app.post('/api/auth/set-password', (req, res) => {
             req.session.userId = user.id;
             req.session.email = user.email;
             
-            // Save session before sending response
-            req.session.save((err) => {
-                if (err) {
-                    console.error('Error saving session:', err);
-                    return res.status(500).json({ success: false, error: 'Session error' });
-                }
-                return res.json({ success: true, message: 'Password set successfully' });
-            });
+            return res.json({ success: true, message: 'Password set successfully' });
         });
     });
 });

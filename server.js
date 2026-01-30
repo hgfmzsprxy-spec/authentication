@@ -845,14 +845,15 @@ app.post('/api/auth/login', (req, res) => {
                             req.session.email = newUser.email;
                             console.log('[Login] Session set for new admin:', { userId: newUser.id, email: newUser.email });
                             console.log('[Login] Session ID:', req.sessionID);
-                            // Force cookie to be set
-                            res.cookie('connect.sid', req.sessionID, {
-                                httpOnly: true,
-                                secure: process.env.VERCEL ? true : false,
-                                sameSite: process.env.VERCEL ? 'none' : 'lax',
-                                maxAge: 24 * 60 * 60 * 1000
+                            // Force save session before response (critical for Vercel without store)
+                            req.session.save((err) => {
+                                if (err) {
+                                    console.error('[Login] Error saving session:', err);
+                                    return res.status(500).json({ success: false, error: 'Session error' });
+                                }
+                                console.log('[Login] Session saved successfully');
+                                return res.json({ success: true, user: { id: newUser.id, email: newUser.email } });
                             });
-                            return res.json({ success: true, user: { id: newUser.id, email: newUser.email } });
                         });
                     } else {
                         return res.status(401).json({ success: false, error: 'Invalid email or password' });
@@ -880,14 +881,15 @@ app.post('/api/auth/login', (req, res) => {
                         req.session.email = user.email;
                         console.log('[Login] Session set for admin (updated):', { userId: user.id, email: user.email });
                         console.log('[Login] Session ID:', req.sessionID);
-                        // Force cookie to be set
-                        res.cookie('connect.sid', req.sessionID, {
-                            httpOnly: true,
-                            secure: process.env.VERCEL ? true : false,
-                            sameSite: process.env.VERCEL ? 'none' : 'lax',
-                            maxAge: 24 * 60 * 60 * 1000
+                        // Force save session before response (critical for Vercel without store)
+                        req.session.save((err) => {
+                            if (err) {
+                                console.error('[Login] Error saving session:', err);
+                                return res.status(500).json({ success: false, error: 'Session error' });
+                            }
+                            console.log('[Login] Session saved successfully');
+                            return res.json({ success: true, user: { id: user.id, email: user.email } });
                         });
-                        return res.json({ success: true, user: { id: user.id, email: user.email } });
                     } else {
                         return res.status(401).json({ success: false, error: 'Invalid email or password' });
                     }
@@ -932,14 +934,15 @@ app.post('/api/auth/login', (req, res) => {
         req.session.email = user.email;
         console.log('[Login] Session set for user:', { userId: user.id, email: user.email });
         console.log('[Login] Session ID:', req.sessionID);
-        // Force cookie to be set
-        res.cookie('connect.sid', req.sessionID, {
-            httpOnly: true,
-            secure: process.env.VERCEL ? true : false,
-            sameSite: process.env.VERCEL ? 'none' : 'lax',
-            maxAge: 24 * 60 * 60 * 1000
+        // Force save session before response (critical for Vercel without store)
+        req.session.save((err) => {
+            if (err) {
+                console.error('[Login] Error saving session:', err);
+                return res.status(500).json({ success: false, error: 'Session error' });
+            }
+            console.log('[Login] Session saved successfully');
+            return res.json({ success: true, message: 'Login successful' });
         });
-        return res.json({ success: true, message: 'Login successful' });
     });
 });
 

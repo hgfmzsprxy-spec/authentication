@@ -88,11 +88,17 @@ function requireAuth(req, res, next) {
     }
     
     // Debug session
-    console.log('[Auth] Path:', req.path, 'Session:', req.session ? { userId: req.session.userId, email: req.session.email } : 'no session');
+    console.log('[Auth] Path:', req.path);
+    console.log('[Auth] Session exists:', !!req.session);
+    console.log('[Auth] Session userId:', req.session?.userId);
+    console.log('[Auth] Cookies:', req.headers.cookie);
     
     if (req.session && req.session.userId) {
+        console.log('[Auth] User authenticated, allowing access');
         return next();
     }
+    
+    console.log('[Auth] User NOT authenticated, redirecting to login');
     // Allow access to login page and API auth endpoints
     if (req.path === '/login.html' || 
         req.path.startsWith('/api/auth/') || req.path === '/api/auth/login' || 
@@ -837,6 +843,15 @@ app.post('/api/auth/login', (req, res) => {
                             }
                             req.session.userId = newUser.id;
                             req.session.email = newUser.email;
+                            console.log('[Login] Session set for new admin:', { userId: newUser.id, email: newUser.email });
+                            console.log('[Login] Session ID:', req.sessionID);
+                            // Force cookie to be set
+                            res.cookie('connect.sid', req.sessionID, {
+                                httpOnly: true,
+                                secure: process.env.VERCEL ? true : false,
+                                sameSite: process.env.VERCEL ? 'none' : 'lax',
+                                maxAge: 24 * 60 * 60 * 1000
+                            });
                             return res.json({ success: true, user: { id: newUser.id, email: newUser.email } });
                         });
                     } else {
@@ -863,6 +878,15 @@ app.post('/api/auth/login', (req, res) => {
                     if (inputPasswordHash === correctPasswordHash) {
                         req.session.userId = user.id;
                         req.session.email = user.email;
+                        console.log('[Login] Session set for admin (updated):', { userId: user.id, email: user.email });
+                        console.log('[Login] Session ID:', req.sessionID);
+                        // Force cookie to be set
+                        res.cookie('connect.sid', req.sessionID, {
+                            httpOnly: true,
+                            secure: process.env.VERCEL ? true : false,
+                            sameSite: process.env.VERCEL ? 'none' : 'lax',
+                            maxAge: 24 * 60 * 60 * 1000
+                        });
                         return res.json({ success: true, user: { id: user.id, email: user.email } });
                     } else {
                         return res.status(401).json({ success: false, error: 'Invalid email or password' });
@@ -906,7 +930,15 @@ app.post('/api/auth/login', (req, res) => {
         // Set session
         req.session.userId = user.id;
         req.session.email = user.email;
-        
+        console.log('[Login] Session set for user:', { userId: user.id, email: user.email });
+        console.log('[Login] Session ID:', req.sessionID);
+        // Force cookie to be set
+        res.cookie('connect.sid', req.sessionID, {
+            httpOnly: true,
+            secure: process.env.VERCEL ? true : false,
+            sameSite: process.env.VERCEL ? 'none' : 'lax',
+            maxAge: 24 * 60 * 60 * 1000
+        });
         return res.json({ success: true, message: 'Login successful' });
     });
 });

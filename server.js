@@ -1,5 +1,4 @@
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
@@ -8,6 +7,9 @@ const https = require('https');
 const http = require('http');
 const session = require('express-session');
 const SQLiteStore = require('connect-sqlite3')(session);
+
+// Use database adapter (libsql in Vercel, sqlite3 locally)
+const db = require('./db-adapter');
 
 const app = express();
 const PORT = 3000;
@@ -33,11 +35,9 @@ app.get('/api/debug/routes', (req, res) => {
 });
 
 // Session configuration
-// Use /tmp directory in Vercel (read-write), ./ locally
-const sessionDir = process.env.VERCEL ? '/tmp' : './';
-app.use(session({
-    store: new SQLiteStore({ db: 'sessions.db', dir: sessionDir }),
-    secret: crypto.randomBytes(32).toString('hex'),
+// Use memory store in Vercel (sqlite3 doesn't work), SQLite store locally
+const sessionConfig = {
+    secret: process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex'),
     resave: false,
     saveUninitialized: false,
     cookie: { 
@@ -45,7 +45,19 @@ app.use(session({
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
-}));
+};
+
+if (process.env.VERCEL) {
+    // Use memory store in Vercel (sessions will be lost on restart, but works)
+    // For production, consider using Vercel KV or external Redis
+    sessionConfig.store = new (require('express-session').MemoryStore)();
+} else {
+    // Use SQLite store locally
+    const sessionDir = './';
+    sessionConfig.store = new SQLiteStore({ db: 'sessions.db', dir: sessionDir });
+}
+
+app.use(session(sessionConfig));
 
 // Middleware
 const corsOptions = {
@@ -100,16 +112,11 @@ app.use((req, res, next) => {
 });
 
 // Database initialization
-// Use /tmp directory in Vercel (read-write), ./ locally
-const dbPath = process.env.VERCEL ? '/tmp/auth.db' : './auth.db';
-const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-        console.error('Error opening database:', err.message);
-    } else {
-        console.log(`Connected to SQLite database at ${dbPath}`);
-        initializeDatabase();
-    }
-});
+// Database is already initialized in db-adapter.js
+// Initialize tables
+setTimeout(() => {
+    initializeDatabase();
+}, 100); // Small delay to ensure db is ready
 
 // Initialize database tables
 function initializeDatabase() {

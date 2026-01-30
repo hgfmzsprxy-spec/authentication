@@ -88,6 +88,9 @@ function requireAuth(req, res, next) {
         return next();
     }
     
+    // Debug session
+    console.log('[Auth] Path:', req.path, 'Session:', req.session ? { userId: req.session.userId, email: req.session.email } : 'no session');
+    
     if (req.session && req.session.userId) {
         return next();
     }
@@ -834,7 +837,14 @@ app.post('/api/auth/login', (req, res) => {
                                 return res.status(500).json({ success: false, error: 'Database error' });
                             }
                             req.session.userId = newUser.id;
-                            return res.json({ success: true, user: { id: newUser.id, email: newUser.email } });
+                            req.session.email = newUser.email;
+                            req.session.save((err) => {
+                                if (err) {
+                                    console.error('Error saving session:', err);
+                                    return res.status(500).json({ success: false, error: 'Session error' });
+                                }
+                                return res.json({ success: true, user: { id: newUser.id, email: newUser.email } });
+                            });
                         });
                     } else {
                         return res.status(401).json({ success: false, error: 'Invalid email or password' });
@@ -859,7 +869,14 @@ app.post('/api/auth/login', (req, res) => {
                     // Check if provided password matches
                     if (inputPasswordHash === correctPasswordHash) {
                         req.session.userId = user.id;
-                        return res.json({ success: true, user: { id: user.id, email: user.email } });
+                        req.session.email = user.email;
+                        req.session.save((err) => {
+                            if (err) {
+                                console.error('Error saving session:', err);
+                                return res.status(500).json({ success: false, error: 'Session error' });
+                            }
+                            return res.json({ success: true, user: { id: user.id, email: user.email } });
+                        });
                     } else {
                         return res.status(401).json({ success: false, error: 'Invalid email or password' });
                     }
@@ -870,7 +887,15 @@ app.post('/api/auth/login', (req, res) => {
             // Admin exists with correct password and Active status - check input password
             if (inputPasswordHash === correctPasswordHash) {
                 req.session.userId = user.id;
-                return res.json({ success: true, user: { id: user.id, email: user.email } });
+                req.session.email = user.email;
+                // Save session before sending response
+                req.session.save((err) => {
+                    if (err) {
+                        console.error('Error saving session:', err);
+                        return res.status(500).json({ success: false, error: 'Session error' });
+                    }
+                    return res.json({ success: true, user: { id: user.id, email: user.email } });
+                });
             } else {
                 return res.status(401).json({ success: false, error: 'Invalid email or password' });
             }
@@ -902,7 +927,14 @@ app.post('/api/auth/login', (req, res) => {
         req.session.userId = user.id;
         req.session.email = user.email;
         
-        return res.json({ success: true, message: 'Login successful' });
+        // Save session before sending response
+        req.session.save((err) => {
+            if (err) {
+                console.error('Error saving session:', err);
+                return res.status(500).json({ success: false, error: 'Session error' });
+            }
+            return res.json({ success: true, message: 'Login successful' });
+        });
     });
 });
 
@@ -943,7 +975,14 @@ app.post('/api/auth/set-password', (req, res) => {
             req.session.userId = user.id;
             req.session.email = user.email;
             
-            return res.json({ success: true, message: 'Password set successfully' });
+            // Save session before sending response
+            req.session.save((err) => {
+                if (err) {
+                    console.error('Error saving session:', err);
+                    return res.status(500).json({ success: false, error: 'Session error' });
+                }
+                return res.json({ success: true, message: 'Password set successfully' });
+            });
         });
     });
 });

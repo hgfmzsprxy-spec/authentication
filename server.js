@@ -43,9 +43,12 @@ app.get('/api/debug/routes', (req, res) => {
 // Session configuration
 // In Vercel, use cookie-based sessions (no store) - cookies are sent with every request
 // Locally, use SQLite store
+// Generate session secret once (used by both cookieParser and session)
+const sessionSecret = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
+
 const sessionConfig = {
     name: 'auth.sid', // Custom cookie name
-    secret: process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex'),
+    secret: sessionSecret,
     resave: process.env.VERCEL ? true : false, // Force save in Vercel (no store)
     saveUninitialized: process.env.VERCEL ? true : false, // Save even uninitialized sessions in Vercel
     cookie: { 
@@ -64,10 +67,10 @@ if (!process.env.VERCEL) {
 }
 // In Vercel, don't use a store - sessions will be stored in signed cookies
 
-app.use(session(sessionConfig));
+// Cookie parser (needed for signed cookies in Vercel) - MUST be before session
+app.use(cookieParser(sessionSecret));
 
-// Cookie parser (needed for signed cookies in Vercel)
-app.use(cookieParser(sessionConfig.secret));
+app.use(session(sessionConfig));
 
 // Middleware
 const corsOptions = {

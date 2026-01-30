@@ -1,15 +1,7 @@
 (() => {
   // Dynamic API URL - works on Vercel and localhost
-  // Detect base path from current location
-  const getBasePath = () => {
-    const pathname = window.location.pathname;
-    // If pathname is like /authentication/dashboard.html, extract /authentication
-    const match = pathname.match(/^(\/[^\/]+)/);
-    return match ? match[1] : '';
-  };
-  
-  const basePath = getBasePath();
-  let NAV_API_URL = window.API_URL || `${window.location.origin}${basePath}/api`;
+  // Always use absolute path to /api (no base path needed)
+  let NAV_API_URL = window.API_URL || `${window.location.origin}/api`;
   
   // Fallback to localhost for local development
   if (!window.API_URL && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {

@@ -1,13 +1,5 @@
-// Detect base path from current location
-const getBasePath = () => {
-    const pathname = window.location.pathname;
-    // If pathname is like /authentication/index.html, extract /authentication
-    const match = pathname.match(/^(\/[^\/]+)/);
-    return match ? match[1] : '';
-};
-
-const basePath = getBasePath();
-let API_URL = `${window.location.origin}${basePath}/api`;
+// Always use absolute path to /api (no base path needed)
+let API_URL = `${window.location.origin}/api`;
 
 let currentAppId = null;
 let allLicenses = [];
@@ -16,7 +8,7 @@ let userPermissions = {};
 async function resolveApiUrl() {
     const candidates = [];
     if (window.location && window.location.origin) {
-        candidates.push(`${window.location.origin}${basePath}/api`);
+        candidates.push(`${window.location.origin}/api`);
     }
     if (window.location && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
         candidates.push('http://localhost:3000/api');

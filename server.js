@@ -787,6 +787,21 @@ function dbGetWithInitRetry(sql, params, callback) {
     });
 }
 
+// API auth guard for non-auth endpoints
+app.use('/api', (req, res, next) => {
+    if (req.path.startsWith('/auth')) {
+        return next();
+    }
+    const userId = getUserIdFromRequest(req);
+    if (!userId) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+    // Ensure session is populated for downstream handlers
+    req.session = req.session || {};
+    req.session.userId = userId;
+    next();
+});
+
 // API Routes
 
 // ==================== AUTHENTICATION API ====================
@@ -1202,11 +1217,12 @@ app.get('/api/auth/me', (req, res) => {
 
 // Get user permissions
 app.get('/api/auth/permissions', (req, res) => {
-    if (!req.session || !req.session.userId) {
+    const userId = getUserIdFromRequest(req);
+    if (!userId) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
     
-    getUserPermissions(req.session.userId, (err, permissions) => {
+    getUserPermissions(userId, (err, permissions) => {
         if (err) {
             return res.status(500).json({ error: 'Database error' });
         }

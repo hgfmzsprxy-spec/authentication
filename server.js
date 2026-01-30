@@ -43,6 +43,7 @@ app.get('/api/debug/routes', (req, res) => {
 // In Vercel, use cookie-based sessions (no store) - cookies are sent with every request
 // Locally, use SQLite store
 const sessionConfig = {
+    name: 'auth.sid', // Custom cookie name
     secret: process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex'),
     resave: process.env.VERCEL ? true : false, // Force save in Vercel (no store)
     saveUninitialized: process.env.VERCEL ? true : false, // Save even uninitialized sessions in Vercel
@@ -50,7 +51,8 @@ const sessionConfig = {
         secure: process.env.VERCEL ? true : false, // HTTPS in Vercel
         httpOnly: true,
         sameSite: process.env.VERCEL ? 'none' : 'lax', // Required for cross-origin in Vercel
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        domain: process.env.VERCEL ? undefined : undefined // Let browser set domain automatically
     }
 };
 
@@ -851,7 +853,17 @@ app.post('/api/auth/login', (req, res) => {
                                     console.error('[Login] Error saving session:', err);
                                     return res.status(500).json({ success: false, error: 'Session error' });
                                 }
-                                console.log('[Login] Session saved successfully');
+                                console.log('[Login] Session saved successfully, Session ID:', req.sessionID);
+                                // Manually set cookie to ensure it's sent
+                                const cookieName = sessionConfig.name || 'connect.sid';
+                                res.cookie(cookieName, req.sessionID, {
+                                    httpOnly: true,
+                                    secure: process.env.VERCEL ? true : false,
+                                    sameSite: process.env.VERCEL ? 'none' : 'lax',
+                                    maxAge: 24 * 60 * 60 * 1000,
+                                    path: '/'
+                                });
+                                console.log('[Login] Cookie manually set:', cookieName);
                                 return res.json({ success: true, user: { id: newUser.id, email: newUser.email } });
                             });
                         });
@@ -887,7 +899,17 @@ app.post('/api/auth/login', (req, res) => {
                                 console.error('[Login] Error saving session:', err);
                                 return res.status(500).json({ success: false, error: 'Session error' });
                             }
-                            console.log('[Login] Session saved successfully');
+                            console.log('[Login] Session saved successfully, Session ID:', req.sessionID);
+                            // Manually set cookie to ensure it's sent
+                            const cookieName = sessionConfig.name || 'connect.sid';
+                            res.cookie(cookieName, req.sessionID, {
+                                httpOnly: true,
+                                secure: process.env.VERCEL ? true : false,
+                                sameSite: process.env.VERCEL ? 'none' : 'lax',
+                                maxAge: 24 * 60 * 60 * 1000,
+                                path: '/'
+                            });
+                            console.log('[Login] Cookie manually set:', cookieName);
                             return res.json({ success: true, user: { id: user.id, email: user.email } });
                         });
                     } else {
@@ -940,7 +962,17 @@ app.post('/api/auth/login', (req, res) => {
                 console.error('[Login] Error saving session:', err);
                 return res.status(500).json({ success: false, error: 'Session error' });
             }
-            console.log('[Login] Session saved successfully');
+            console.log('[Login] Session saved successfully, Session ID:', req.sessionID);
+            // Manually set cookie to ensure it's sent
+            const cookieName = sessionConfig.name || 'connect.sid';
+            res.cookie(cookieName, req.sessionID, {
+                httpOnly: true,
+                secure: process.env.VERCEL ? true : false,
+                sameSite: process.env.VERCEL ? 'none' : 'lax',
+                maxAge: 24 * 60 * 60 * 1000,
+                path: '/'
+            });
+            console.log('[Login] Cookie manually set:', cookieName);
             return res.json({ success: true, message: 'Login successful' });
         });
     });

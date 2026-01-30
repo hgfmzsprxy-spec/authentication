@@ -4586,8 +4586,10 @@ app.use('/api', (req, res) => {
 });
 
 // Static files (must be after all API routes to avoid conflicts)
-app.use(express.static('auth'));
-app.use('/new-theme', express.static('auth/new-theme'));
+// Use absolute path for Vercel compatibility
+const authPath = path.join(__dirname, 'auth');
+app.use(express.static(authPath));
+app.use('/new-theme', express.static(path.join(authPath, 'new-theme')));
 
 // Only start server if not in Vercel (serverless environment)
 if (!process.env.VERCEL) {

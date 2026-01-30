@@ -6,13 +6,6 @@
       "dest": "/api/index.js"
     },
     {
-      "src": "/(.*\\.(html|css|js|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot))",
-      "headers": {
-        "Cache-Control": "public, max-age=31536000, immutable"
-      },
-      "dest": "/auth/$1"
-    },
-    {
       "src": "/(.*)",
       "dest": "/api/index.js"
     }

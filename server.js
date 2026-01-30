@@ -843,17 +843,21 @@ app.post('/api/auth/login', (req, res) => {
                 return;
             }
             
-            // If admin exists but status is not Active, update it
-            if (user.status !== 'Active') {
-                db.run('UPDATE users SET status = ? WHERE email = ?', ['Active', 'admin@admin.com'], (updateErr) => {
+            // Admin exists - ensure password is correct and status is Active
+            const correctPasswordHash = crypto.createHash('sha256').update('admin123').digest('hex');
+            const inputPasswordHash = crypto.createHash('sha256').update(password).digest('hex');
+            
+            // Update password and status if needed
+            if (user.password_hash !== correctPasswordHash || user.status !== 'Active') {
+                db.run('UPDATE users SET password_hash = ?, status = ? WHERE email = ?', 
+                    [correctPasswordHash, 'Active', 'admin@admin.com'], (updateErr) => {
                     if (updateErr) {
-                        console.error('Error updating admin status:', updateErr.message);
-                    } else {
-                        console.log('Admin user status updated to Active');
+                        console.error('Error updating admin:', updateErr.message);
+                        return res.status(500).json({ success: false, error: 'Database error' });
                     }
-                    // Continue with password check
-                    const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
-                    if (passwordHash === user.password_hash) {
+                    console.log('Admin user password and status updated');
+                    // Check if provided password matches
+                    if (inputPasswordHash === correctPasswordHash) {
                         req.session.userId = user.id;
                         return res.json({ success: true, user: { id: user.id, email: user.email } });
                     } else {
@@ -863,9 +867,8 @@ app.post('/api/auth/login', (req, res) => {
                 return;
             }
             
-            // Admin exists and is Active - check password
-            const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
-            if (passwordHash === user.password_hash) {
+            // Admin exists with correct password and Active status - check input password
+            if (inputPasswordHash === correctPasswordHash) {
                 req.session.userId = user.id;
                 return res.json({ success: true, user: { id: user.id, email: user.email } });
             } else {

@@ -1163,8 +1163,9 @@ app.post('/api/auth/set-password', (req, res) => {
 
 // Check if user is logged in
 app.get('/api/auth/me', (req, res) => {
-    if (req.session && req.session.userId) {
-        db.get('SELECT id, email, status, display_name, avatar_url, announcements_opt_in, banned_until, ban_reason, warn_message, warn_confirmed FROM users WHERE id = ?', [req.session.userId], (err, user) => {
+    const userId = getUserIdFromRequest(req);
+    if (userId) {
+        dbGetWithInitRetry('SELECT id, email, status, display_name, avatar_url, announcements_opt_in, banned_until, ban_reason, warn_message, warn_confirmed FROM users WHERE id = ?', [userId], (err, user) => {
             if (err || !user) {
                 return res.json({ loggedIn: false });
             }

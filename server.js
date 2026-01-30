@@ -932,33 +932,40 @@ app.post('/api/auth/login', (req, res) => {
                     console.log('Admin user password and status updated');
                     // Check if provided password matches
                     if (inputPasswordHash === correctPasswordHash) {
-                        req.session.userId = user.id;
-                        req.session.email = user.email;
-                        console.log('[Login] Session set for admin (updated):', { userId: user.id, email: user.email });
-                        console.log('[Login] Session ID:', req.sessionID);
-                        // Force save session before response (critical for Vercel without store)
-                        req.session.save((err) => {
-                            if (err) {
-                                console.error('[Login] Error saving session:', err);
-                                return res.status(500).json({ success: false, error: 'Session error' });
+                        // Re-load admin to ensure id/email are present
+                        return db.get('SELECT id, email FROM users WHERE email = ?', ['admin@admin.com'], (getErr, adminUser) => {
+                            if (getErr || !adminUser || !adminUser.id) {
+                                console.error('[Login] Error reloading admin user:', getErr?.message);
+                                return res.status(500).json({ success: false, error: 'Database error' });
                             }
-                            console.log('[Login] Session saved successfully, Session ID:', req.sessionID);
-                            // Also set userId cookie for Vercel compatibility
-                            if (process.env.VERCEL) {
-                                try {
-                                res.cookie('userId', user.id.toString(), {
-                                    httpOnly: true,
-                                    secure: true,
-                                    sameSite: 'none',
-                                    maxAge: 24 * 60 * 60 * 1000,
-                                    path: '/'
-                                });
-                                    console.log('[Login] UserId cookie set for Vercel:', user.id);
-                                } catch (cookieErr) {
-                                    console.error('[Login] Error setting cookie:', cookieErr);
+                            req.session.userId = adminUser.id;
+                            req.session.email = adminUser.email || 'admin@admin.com';
+                            console.log('[Login] Session set for admin (updated):', { userId: adminUser.id, email: adminUser.email });
+                            console.log('[Login] Session ID:', req.sessionID);
+                            // Force save session before response (critical for Vercel without store)
+                            req.session.save((err) => {
+                                if (err) {
+                                    console.error('[Login] Error saving session:', err);
+                                    return res.status(500).json({ success: false, error: 'Session error' });
                                 }
-                            }
-                            return res.json({ success: true, user: { id: user.id, email: user.email } });
+                                console.log('[Login] Session saved successfully, Session ID:', req.sessionID);
+                                // Also set userId cookie for Vercel compatibility
+                                if (process.env.VERCEL) {
+                                    try {
+                                        res.cookie('userId', adminUser.id.toString(), {
+                                            httpOnly: true,
+                                            secure: true,
+                                            sameSite: 'none',
+                                            maxAge: 24 * 60 * 60 * 1000,
+                                            path: '/'
+                                        });
+                                        console.log('[Login] UserId cookie set for Vercel:', adminUser.id);
+                                    } catch (cookieErr) {
+                                        console.error('[Login] Error setting cookie:', cookieErr);
+                                    }
+                                }
+                                return res.json({ success: true, user: { id: adminUser.id, email: adminUser.email || 'admin@admin.com' } });
+                            });
                         });
                     } else {
                         return res.status(401).json({ success: false, error: 'Invalid email or password' });
@@ -969,6 +976,40 @@ app.post('/api/auth/login', (req, res) => {
             
             // Admin exists with correct password and Active status - check input password
             if (inputPasswordHash === correctPasswordHash) {
+                if (!user || !user.id) {
+                    return db.get('SELECT id, email FROM users WHERE email = ?', ['admin@admin.com'], (getErr, adminUser) => {
+                        if (getErr || !adminUser || !adminUser.id) {
+                            console.error('[Login] Error reloading admin user:', getErr?.message);
+                            return res.status(500).json({ success: false, error: 'Database error' });
+                        }
+                        req.session.userId = adminUser.id;
+                        req.session.email = adminUser.email || 'admin@admin.com';
+                        console.log('[Login] Session set for admin:', { userId: adminUser.id, email: adminUser.email });
+                        console.log('[Login] Session ID:', req.sessionID);
+                        req.session.save((err) => {
+                            if (err) {
+                                console.error('[Login] Error saving session:', err);
+                                return res.status(500).json({ success: false, error: 'Session error' });
+                            }
+                            console.log('[Login] Session saved successfully, Session ID:', req.sessionID);
+                            if (process.env.VERCEL) {
+                                try {
+                                    res.cookie('userId', adminUser.id.toString(), {
+                                        httpOnly: true,
+                                        secure: true,
+                                        sameSite: 'none',
+                                        maxAge: 24 * 60 * 60 * 1000,
+                                        path: '/'
+                                    });
+                                    console.log('[Login] UserId cookie set for Vercel:', adminUser.id);
+                                } catch (cookieErr) {
+                                    console.error('[Login] Error setting cookie:', cookieErr);
+                                }
+                            }
+                            return res.json({ success: true, user: { id: adminUser.id, email: adminUser.email || 'admin@admin.com' } });
+                        });
+                    });
+                }
                 req.session.userId = user.id;
                 req.session.email = user.email;
                 console.log('[Login] Session set for admin:', { userId: user.id, email: user.email });
@@ -983,13 +1024,13 @@ app.post('/api/auth/login', (req, res) => {
                     // Also set userId cookie for Vercel compatibility
                     if (process.env.VERCEL) {
                         try {
-                                res.cookie('userId', user.id.toString(), {
-                                    httpOnly: true,
-                                    secure: true,
-                                    sameSite: 'none',
-                                    maxAge: 24 * 60 * 60 * 1000,
-                                    path: '/'
-                                });
+                            res.cookie('userId', user.id.toString(), {
+                                httpOnly: true,
+                                secure: true,
+                                sameSite: 'none',
+                                maxAge: 24 * 60 * 60 * 1000,
+                                path: '/'
+                            });
                             console.log('[Login] UserId cookie set for Vercel:', user.id);
                         } catch (cookieErr) {
                             console.error('[Login] Error setting cookie:', cookieErr);

@@ -850,11 +850,12 @@ app.post('/api/auth/check-email', (req, res) => {
 
 // Login
 app.post('/api/auth/login', (req, res) => {
-    const { email, password } = req.body;
-    
-    if (!email || !password) {
-        return res.status(400).json({ success: false, error: 'Email and password are required' });
-    }
+    try {
+        const { email, password } = req.body;
+        
+        if (!email || !password) {
+            return res.status(400).json({ success: false, error: 'Email and password are required' });
+        }
     
     // Special handling for admin@admin.com - ensure it exists and is Active
     if (email === 'admin@admin.com') {
@@ -893,15 +894,18 @@ app.post('/api/auth/login', (req, res) => {
                                 console.log('[Login] Session saved successfully, Session ID:', req.sessionID);
                                 // Also set userId cookie for Vercel compatibility
                                 if (process.env.VERCEL) {
+                                    try {
                                     res.cookie('userId', newUser.id.toString(), {
                                         httpOnly: true,
                                         secure: true,
                                         sameSite: 'none',
                                         maxAge: 24 * 60 * 60 * 1000,
-                                        path: '/',
-                                        signed: true
+                                        path: '/'
                                     });
-                                    console.log('[Login] UserId cookie set for Vercel:', newUser.id);
+                                        console.log('[Login] UserId cookie set for Vercel:', newUser.id);
+                                    } catch (cookieErr) {
+                                        console.error('[Login] Error setting cookie:', cookieErr);
+                                    }
                                 }
                                 return res.json({ success: true, user: { id: newUser.id, email: newUser.email } });
                             });
@@ -941,15 +945,19 @@ app.post('/api/auth/login', (req, res) => {
                             console.log('[Login] Session saved successfully, Session ID:', req.sessionID);
                             // Also set userId cookie for Vercel compatibility
                             if (process.env.VERCEL) {
-                                res.cookie('userId', user.id.toString(), {
-                                    httpOnly: true,
-                                    secure: true,
-                                    sameSite: 'none',
-                                    maxAge: 24 * 60 * 60 * 1000,
-                                    path: '/',
-                                    signed: true
-                                });
-                                console.log('[Login] UserId cookie set for Vercel:', user.id);
+                                try {
+                                    res.cookie('userId', user.id.toString(), {
+                                        httpOnly: true,
+                                        secure: true,
+                                        sameSite: 'none',
+                                        maxAge: 24 * 60 * 60 * 1000,
+                                        path: '/',
+                                        signed: true
+                                    });
+                                    console.log('[Login] UserId cookie set for Vercel:', user.id);
+                                } catch (cookieErr) {
+                                    console.error('[Login] Error setting cookie:', cookieErr);
+                                }
                             }
                             return res.json({ success: true, user: { id: user.id, email: user.email } });
                         });
@@ -964,7 +972,33 @@ app.post('/api/auth/login', (req, res) => {
             if (inputPasswordHash === correctPasswordHash) {
                 req.session.userId = user.id;
                 req.session.email = user.email;
-                return res.json({ success: true, user: { id: user.id, email: user.email } });
+                console.log('[Login] Session set for admin:', { userId: user.id, email: user.email });
+                console.log('[Login] Session ID:', req.sessionID);
+                // Force save session before response (critical for Vercel without store)
+                req.session.save((err) => {
+                    if (err) {
+                        console.error('[Login] Error saving session:', err);
+                        return res.status(500).json({ success: false, error: 'Session error' });
+                    }
+                    console.log('[Login] Session saved successfully, Session ID:', req.sessionID);
+                    // Also set userId cookie for Vercel compatibility
+                    if (process.env.VERCEL) {
+                        try {
+                            res.cookie('userId', user.id.toString(), {
+                                httpOnly: true,
+                                secure: true,
+                                sameSite: 'none',
+                                maxAge: 24 * 60 * 60 * 1000,
+                                path: '/',
+                                signed: true
+                            });
+                            console.log('[Login] UserId cookie set for Vercel:', user.id);
+                        } catch (cookieErr) {
+                            console.error('[Login] Error setting cookie:', cookieErr);
+                        }
+                    }
+                    return res.json({ success: true, user: { id: user.id, email: user.email } });
+                });
             } else {
                 return res.status(401).json({ success: false, error: 'Invalid email or password' });
             }
@@ -1019,6 +1053,10 @@ app.post('/api/auth/login', (req, res) => {
             return res.json({ success: true, message: 'Login successful' });
         });
     });
+    } catch (error) {
+        console.error('[Login] Unexpected error:', error);
+        return res.status(500).json({ success: false, error: 'Internal server error' });
+    }
 });
 
 // Set password (for pending users)

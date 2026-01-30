@@ -737,6 +737,49 @@ app.post('/api/auth/check-email', (req, res) => {
         return res.json({ approved: false, error: 'Email is required' });
     }
     
+    // Special handling for admin@admin.com - ensure it exists and is Active
+    if (email === 'admin@admin.com') {
+        db.get('SELECT id, status FROM users WHERE email = ?', [email], (err, user) => {
+            if (err) {
+                return res.status(500).json({ approved: false, error: 'Database error' });
+            }
+            
+            if (!user) {
+                // Create admin user if doesn't exist
+                const defaultPassword = crypto.createHash('sha256').update('admin123').digest('hex');
+                db.run('INSERT INTO users (email, password_hash, status) VALUES (?, ?, ?)', 
+                    ['admin@admin.com', defaultPassword, 'Active'], (insertErr) => {
+                    if (insertErr) {
+                        console.error('Error creating admin user:', insertErr.message);
+                        return res.status(500).json({ approved: false, error: 'Database error' });
+                    }
+                    // Return success after creating admin
+                    return res.json({ approved: true, pending: false, message: 'Email found. Please enter your password.' });
+                });
+                return;
+            }
+            
+            // If admin exists but status is not Active, update it
+            if (user.status !== 'Active') {
+                db.run('UPDATE users SET status = ? WHERE email = ?', ['Active', 'admin@admin.com'], (updateErr) => {
+                    if (updateErr) {
+                        console.error('Error updating admin status:', updateErr.message);
+                    } else {
+                        console.log('Admin user status updated to Active');
+                    }
+                    // Continue with normal flow
+                    return res.json({ approved: true, pending: false, message: 'Email found. Please enter your password.' });
+                });
+                return;
+            }
+            
+            // Admin exists and is Active
+            return res.json({ approved: true, pending: false, message: 'Email found. Please enter your password.' });
+        });
+        return;
+    }
+    
+    // Normal user check
     db.get('SELECT id, status FROM users WHERE email = ?', [email], (err, user) => {
         if (err) {
             return res.status(500).json({ approved: false, error: 'Database error' });
@@ -766,6 +809,73 @@ app.post('/api/auth/login', (req, res) => {
         return res.status(400).json({ success: false, error: 'Email and password are required' });
     }
     
+    // Special handling for admin@admin.com - ensure it exists and is Active
+    if (email === 'admin@admin.com') {
+        db.get('SELECT id, email, password_hash, status FROM users WHERE email = ?', [email], (err, user) => {
+            if (err) {
+                return res.status(500).json({ success: false, error: 'Database error' });
+            }
+            
+            if (!user) {
+                // Create admin user if doesn't exist
+                const defaultPassword = crypto.createHash('sha256').update('admin123').digest('hex');
+                db.run('INSERT INTO users (email, password_hash, status) VALUES (?, ?, ?)', 
+                    ['admin@admin.com', defaultPassword, 'Active'], (insertErr) => {
+                    if (insertErr) {
+                        console.error('Error creating admin user:', insertErr.message);
+                        return res.status(500).json({ success: false, error: 'Database error' });
+                    }
+                    // Verify password and login
+                    const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
+                    if (passwordHash === defaultPassword) {
+                        // Get the newly created user
+                        db.get('SELECT id, email FROM users WHERE email = ?', [email], (getErr, newUser) => {
+                            if (getErr || !newUser) {
+                                return res.status(500).json({ success: false, error: 'Database error' });
+                            }
+                            req.session.userId = newUser.id;
+                            return res.json({ success: true, user: { id: newUser.id, email: newUser.email } });
+                        });
+                    } else {
+                        return res.status(401).json({ success: false, error: 'Invalid email or password' });
+                    }
+                });
+                return;
+            }
+            
+            // If admin exists but status is not Active, update it
+            if (user.status !== 'Active') {
+                db.run('UPDATE users SET status = ? WHERE email = ?', ['Active', 'admin@admin.com'], (updateErr) => {
+                    if (updateErr) {
+                        console.error('Error updating admin status:', updateErr.message);
+                    } else {
+                        console.log('Admin user status updated to Active');
+                    }
+                    // Continue with password check
+                    const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
+                    if (passwordHash === user.password_hash) {
+                        req.session.userId = user.id;
+                        return res.json({ success: true, user: { id: user.id, email: user.email } });
+                    } else {
+                        return res.status(401).json({ success: false, error: 'Invalid email or password' });
+                    }
+                });
+                return;
+            }
+            
+            // Admin exists and is Active - check password
+            const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
+            if (passwordHash === user.password_hash) {
+                req.session.userId = user.id;
+                return res.json({ success: true, user: { id: user.id, email: user.email } });
+            } else {
+                return res.status(401).json({ success: false, error: 'Invalid email or password' });
+            }
+        });
+        return;
+    }
+    
+    // Normal user login
     db.get('SELECT id, email, password_hash, status FROM users WHERE email = ?', [email], (err, user) => {
         if (err) {
             return res.status(500).json({ success: false, error: 'Database error' });

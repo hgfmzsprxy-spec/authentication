@@ -68,7 +68,9 @@ if (isVercel) {
                     if (row) {
                         rowObj = {};
                         for (let i = 0; i < result.columns.length; i++) {
-                            rowObj[result.columns[i].name] = row[i];
+                            const col = result.columns[i];
+                            const colName = typeof col === 'string' ? col : col.name;
+                            rowObj[colName] = row[i];
                         }
                     }
                     
@@ -97,7 +99,9 @@ if (isVercel) {
                     const rows = result.rows.map(row => {
                         const obj = {};
                         for (let i = 0; i < result.columns.length; i++) {
-                            obj[result.columns[i].name] = row[i];
+                            const col = result.columns[i];
+                            const colName = typeof col === 'string' ? col : col.name;
+                            obj[colName] = row[i];
                         }
                         return obj;
                     });

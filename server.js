@@ -458,11 +458,12 @@ function initializeDatabase() {
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
         )`);
         
-        // Create default admin user if doesn't exist
-        db.get('SELECT id FROM users WHERE email = ?', ['admin@admin.com'], (err, row) => {
+        // Create default admin user if doesn't exist, or ensure it's Active
+        db.get('SELECT id, status FROM users WHERE email = ?', ['admin@admin.com'], (err, row) => {
             if (err) {
                 console.error('Error checking admin user:', err.message);
             } else if (!row) {
+                // Create admin user if doesn't exist
                 const defaultPassword = crypto.createHash('sha256').update('admin123').digest('hex');
                 db.run('INSERT INTO users (email, password_hash, status) VALUES (?, ?, ?)', 
                     ['admin@admin.com', defaultPassword, 'Active'], (err) => {
@@ -470,6 +471,15 @@ function initializeDatabase() {
                         console.error('Error creating admin user:', err.message);
                     } else {
                         console.log('Default admin user created: admin@admin.com / admin123');
+                    }
+                });
+            } else if (row.status !== 'Active') {
+                // Ensure admin user is always Active
+                db.run('UPDATE users SET status = ? WHERE email = ?', ['Active', 'admin@admin.com'], (err) => {
+                    if (err) {
+                        console.error('Error updating admin user status:', err.message);
+                    } else {
+                        console.log('Admin user status updated to Active');
                     }
                 });
             }

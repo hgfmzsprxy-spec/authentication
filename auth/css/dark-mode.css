@@ -1,0 +1,496 @@
+html.dark-mode,
+body.dark-mode {
+    background-color: #0f1115;
+    color: #e6e7ea;
+}
+
+html.dark-mode .dashboard,
+html.dark-mode .dashboard-content,
+html.dark-mode .utility-container,
+html.dark-mode .footer,
+html.dark-mode .w-layout-grid,
+html.dark-mode .table-row-link,
+html.dark-mode .table-row,
+html.dark-mode .full-table-row {
+    background-color: transparent;
+}
+
+html.dark-mode .dashboard-sidebar,
+html.dark-mode .dashboard-sidebar .sidebar-content,
+html.dark-mode .dashboard-sidebar .sidebar-logo-wrapper {
+    background-color: #151821 !important;
+    border-right: 1px solid #262b36;
+}
+
+html.dark-mode .dashboard-sidebar .nav-link,
+html.dark-mode .dashboard-sidebar .nav-link.w-inline-block {
+    color: #e6e7ea !important;
+    background-color: transparent !important;
+}
+
+html.dark-mode .dashboard-sidebar .nav-link:hover {
+    background-color: #1c2230;
+    color: #ffffff !important;
+}
+
+html.dark-mode .dashboard-sidebar .nav-link.w--current {
+    background-color: #1f2433 !important;
+}
+
+html.dark-mode .dashboard-sidebar .nav-submenu {
+    background-color: #151821 !important;
+}
+
+html.dark-mode .dashboard-sidebar .nav-submenu .nav-link {
+    color: #cfd6e6 !important;
+    background-color: transparent !important;
+}
+
+html.dark-mode .dashboard-sidebar .nav-submenu .nav-link:hover {
+    background-color: #1c2230;
+    color: #ffffff !important;
+}
+
+html.dark-mode .sidebar-logo,
+html.dark-mode .nav-icon {
+    filter: brightness(0) invert(1);
+}
+
+html.dark-mode .nav-link,
+html.dark-mode .nav-link div,
+html.dark-mode .banner-avatar-name,
+html.dark-mode .no-space-bottom,
+html.dark-mode h1,
+html.dark-mode h2,
+html.dark-mode h3,
+html.dark-mode h4,
+html.dark-mode h5,
+html.dark-mode h6 {
+    color: #e6e7ea;
+}
+
+html.dark-mode .small-text,
+html.dark-mode .form-caption,
+html.dark-mode .text-grey-3,
+html.dark-mode .banner-avatar-caption {
+    color: #9aa3b2;
+}
+
+html.dark-mode .nav-link.w--current,
+html.dark-mode .nav-link.w--current div {
+    color: #b28dff;
+}
+
+html.dark-mode .nav-link.w--current .nav-icon {
+    filter: brightness(0) saturate(100%) invert(70%) sepia(12%) saturate(1828%) hue-rotate(226deg) brightness(92%) contrast(92%);
+}
+
+html.dark-mode .table-module,
+html.dark-mode .module,
+html.dark-mode .account,
+html.dark-mode .account-delete,
+html.dark-mode .content-width-small {
+    background-color: #161a22;
+    border: none !important;
+    box-shadow: 0 1px 1px #76879a3d, 0 3px 8px #76879a14 !important;
+}
+
+html.dark-mode .full-table-row {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    padding: 16px 30px !important;
+}
+
+html.dark-mode body.settings-page .account,
+html.dark-mode body.settings-page .account-delete {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+html.dark-mode body.settings-page .account-delete .content-width-small {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+html.dark-mode .nav-divider {
+    background-color: #3a3f4c !important;
+    height: 1px !important;
+    margin: 24px !important;
+    opacity: 1 !important;
+    display: block !important;
+}
+
+html.dark-mode .full-table-row-divider {
+    background-color: #3a3f4c !important;
+    height: 1px !important;
+    margin: 0 !important;
+    opacity: 1 !important;
+    display: block !important;
+}
+
+html.dark-mode .dashboard-sidebar .nav-divider {
+    background-color: #3a3f4c !important;
+    height: 1px !important;
+    margin: 24px !important;
+    opacity: 1 !important;
+    display: block !important;
+}
+
+html.dark-mode .divider,
+html.dark-mode .account-divider {
+    background-color: #262b36;
+}
+
+html.dark-mode .sidebar-profile-wrapper {
+    border-top-color: #262b36 !important;
+}
+
+html.dark-mode .table-headers,
+html.dark-mode .table-headers-invoice,
+html.dark-mode .w-layout-grid.table-headers,
+html.dark-mode .table-headers._8-columns,
+html.dark-mode .table-headers._7-columns,
+html.dark-mode .table-headers._4-columns,
+html.dark-mode .table-headers._5-columns,
+html.dark-mode .account-table-header {
+    background-color: #151821 !important;
+    border-bottom: 1px solid #262b36;
+}
+
+html.dark-mode .table-header {
+    background-color: transparent !important;
+    border-bottom: 1px solid #262b36;
+}
+
+html.dark-mode .table-row,
+html.dark-mode .table-row-link,
+html.dark-mode .table-row-invoice {
+    border-bottom: 1px solid #262b36;
+}
+
+html.dark-mode .full-table-row {
+    border-bottom: 1px solid transparent !important;
+}
+
+html.dark-mode .table-row-link:last-child,
+html.dark-mode .table-row:last-child,
+html.dark-mode .table-row-invoice:last-child,
+html.dark-mode .full-table-row:last-child {
+    border-bottom: none;
+}
+
+html.dark-mode .text-field,
+html.dark-mode .w-input,
+html.dark-mode input,
+html.dark-mode textarea,
+html.dark-mode select {
+    background-color: #1a1f2a;
+    color: #e6e7ea;
+    border-color: #2f3746;
+}
+
+html.dark-mode .text-field:disabled,
+html.dark-mode .w-input:disabled,
+html.dark-mode input:disabled,
+html.dark-mode textarea:disabled,
+html.dark-mode select:disabled {
+    background-color: #181c25;
+    color: #9aa3b2;
+    border-color: #2f3746;
+    opacity: 1;
+}
+
+html.dark-mode .text-field::placeholder,
+html.dark-mode .w-input::placeholder,
+html.dark-mode input::placeholder {
+    color: #7f8897;
+}
+
+html.dark-mode .button,
+html.dark-mode .button.button-small,
+html.dark-mode .button.button-outline,
+html.dark-mode .account-button {
+    background: linear-gradient(135deg, #6a5af9 0%, #7c4dff 100%);
+    color: #ffffff;
+    border: none;
+}
+
+html.dark-mode .button.button-outline {
+    box-shadow: inset 0 0 0 1px #3a3f4c;
+}
+
+html.dark-mode .button.button-small.button-danger {
+    background: #e53935;
+}
+
+html.dark-mode .w-checkbox-input--inputType-custom {
+    background-color: #1a1f2a;
+    border-color: #2f3746;
+}
+
+html.dark-mode .w-checkbox-input--inputType-custom.w--redirected-checked {
+    background-color: #6a5af9;
+    border-color: #6a5af9;
+}
+
+html.dark-mode .switch-input {
+    box-shadow: inset 0 0 0 1px #2f3746;
+}
+
+html.dark-mode .indication-color {
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
+html.dark-mode .banner-avatar-image {
+    border: 1px solid #2f3746;
+}
+
+/* Ensure default avatar has purple background in dark mode */
+html.dark-mode .banner-avatar-image:not([style*="background-image"]) {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+html.dark-mode .dashboard-content {
+    background-color: #0f1115;
+}
+
+html.dark-mode .modal-card,
+html.dark-mode .modal,
+html.dark-mode .modal-background {
+    background-color: #161a22;
+    color: #e6e7ea;
+}
+
+html.dark-mode .account-table-header {
+    border-color: #262b36;
+}
+
+html.dark-mode .table-title {
+    color: #e6e7ea;
+}
+
+html.dark-mode .permission-disabled {
+    opacity: 0.5;
+    filter: grayscale(20%);
+}
+
+html.dark-mode .in-page-menu-link,
+html.dark-mode .in-page-menu-link:not(.w--current),
+html.dark-mode .in-page-menu-link.w--current {
+    background-color: transparent !important;
+    box-shadow: none;
+}
+
+html.dark-mode .in-page-menu-link {
+    border-color: #2f3746 !important;
+    color: #9aa3b2 !important;
+}
+
+html.dark-mode .in-page-menu-link > div {
+    color: inherit !important;
+}
+
+html.dark-mode .in-page-menu-link.w--current {
+    border-color: #6a5af9 !important;
+    color: #b28dff !important;
+}
+
+html.dark-mode .login-container {
+    background-color: #161a22;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+html.dark-mode .login-title {
+    color: #e6e7ea;
+}
+
+html.dark-mode .login-subtitle,
+html.dark-mode .form-label {
+    color: #a0a7b4;
+}
+
+html.dark-mode .form-input {
+    background-color: #1a1f2a;
+    color: #e6e7ea;
+    border-color: #2f3746;
+}
+
+html.dark-mode .form-input:focus {
+    border-color: #7c4dff;
+}
+
+html.dark-mode .btn-primary {
+    background: linear-gradient(135deg, #6a5af9 0%, #7c4dff 100%);
+}
+
+html.dark-mode label[for="application-name"],
+html.dark-mode label[for="application-description"] {
+    color: #e6e7ea !important;
+}
+
+html.dark-mode #application-name,
+html.dark-mode #application-description {
+    background-color: #1a1f2a !important;
+    color: #e6e7ea !important;
+    border-color: #2f3746 !important;
+}
+
+html.dark-mode .edit-modal-overlay {
+    background-color: rgba(5, 7, 11, 0.7);
+}
+
+html.dark-mode .edit-modal-card {
+    background-color: #161a22 !important;
+    border: 1px solid #262b36;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+html.dark-mode .edit-modal-header {
+    border-bottom: 1px solid #262b36;
+}
+
+html.dark-mode .edit-modal-close {
+    color: #cfd6e6 !important;
+}
+
+html.dark-mode .edit-modal-card input,
+html.dark-mode .edit-modal-card select,
+html.dark-mode .edit-modal-card textarea {
+    background-color: #1a1f2a !important;
+    color: #e6e7ea !important;
+    border-color: #2f3746 !important;
+}
+
+html.dark-mode .edit-modal-card input::placeholder,
+html.dark-mode .edit-modal-card textarea::placeholder {
+    color: #7f8897 !important;
+}
+
+html.dark-mode .edit-modal-card .full-table-row-divider {
+    background-color: #262b36;
+}
+
+html.dark-mode .edit-modal-card .full-table-row {
+    background-color: transparent;
+    box-shadow: none;
+}
+
+/* Dashboard specific styles */
+html.dark-mode .dashboard-content h1,
+html.dark-mode .dashboard-content h2,
+html.dark-mode .dashboard-content h3,
+html.dark-mode .dashboard-content h4,
+html.dark-mode .dashboard-content p {
+    color: #e6e7ea !important;
+}
+
+html.dark-mode .dashboard-content p {
+    color: #9aa3b2 !important;
+}
+
+html.dark-mode .module-link {
+    background-color: #161a22 !important;
+    border-color: #262b36;
+    box-shadow: 0 6px 16px rgba(10, 12, 18, 0.35);
+}
+
+html.dark-mode .module-link h3 {
+    color: #e6e7ea !important;
+}
+
+html.dark-mode .module-link p {
+    color: #9aa3b2 !important;
+}
+
+html.dark-mode .module-link:hover {
+    box-shadow: 0 8px 20px rgba(10, 12, 18, 0.45);
+}
+
+html.dark-mode .module-link a,
+html.dark-mode .module-link div[style*="color: var(--primary-blue)"],
+html.dark-mode .module-link [style*="color: var(--primary-blue)"] {
+    color: #b28dff !important;
+}
+
+/* Permission overlay styles for dark mode */
+html.dark-mode .permission-overlay {
+    background: rgba(15, 17, 21, 0.85) !important;
+    color: #9aa3b2 !important;
+}
+
+html.dark-mode .permission-overlay .lock-icon {
+    filter: brightness(0) invert(0.6);
+}
+
+/* Activity logs terminal in dark mode */
+html.dark-mode #activity-logs-terminal,
+html.dark-mode #admin-logs-terminal {
+    background-color: #151821 !important;
+}
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Purple Scrollbar Styles */
+/* WebKit browsers (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #763FF9;
+    border-radius: 6px;
+    border: 2px solid #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #6528d9;
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #763FF9 #f1f1f1;
+}
+
+/* Dark mode scrollbar */
+html.dark-mode ::-webkit-scrollbar-track {
+    background: #1a1d24;
+}
+
+html.dark-mode ::-webkit-scrollbar-thumb {
+    background: #763FF9;
+    border: 2px solid #1a1d24;
+}
+
+html.dark-mode ::-webkit-scrollbar-thumb:hover {
+    background: #6528d9;
+}
+
+html.dark-mode * {
+    scrollbar-color: #763FF9 #1a1d24;
+}
+
+/* Hide scrollbar in Edit Application modal */
+#edit-application-modal,
+#edit-application-modal * {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+#edit-application-modal::-webkit-scrollbar,
+#edit-application-modal *::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+

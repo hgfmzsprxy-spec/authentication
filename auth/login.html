@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Login - Authentication System</title>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="css/dash-template.webflow.shared.272232231.css" rel="stylesheet" type="text/css">
+    <link href="css/dark-mode.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin="anonymous">
+    <script src="js/theme.js" type="text/javascript"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-container {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+        .login-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .login-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        .success-message {
+            background: #efe;
+            color: #3c3;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        .step-indicator {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 20px;
+        }
+        #password-step {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1 class="login-title">Authentication</h1>
+        <p class="login-subtitle">Please enter your email to continue</p>
+        
+        <div class="step-indicator" id="step-indicator">Step 1 of 2</div>
+        
+        <div id="error-message" class="error-message"></div>
+        <div id="success-message" class="success-message"></div>
+        
+        <!-- Email Step -->
+        <div id="email-step">
+            <div class="form-group">
+                <label class="form-label" for="email">Email Address</label>
+                <input type="email" id="email" class="form-input" placeholder="your@email.com" required>
+            </div>
+            <button class="btn-primary" onclick="checkEmail()">Continue</button>
+        </div>
+        
+        <!-- Password Step -->
+        <div id="password-step">
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+            </div>
+            <div class="form-group" id="confirm-password-group" style="display: none;">
+                <label class="form-label" for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" class="form-input" placeholder="Confirm your password" required>
+            </div>
+            <button class="btn-primary" id="password-btn" onclick="handlePassword()">Login</button>
+        </div>
+    </div>
+    
+    <script>
+        // Dynamic API URL - works on Vercel and localhost
+        // Detect base path from current location
+        const getBasePath = () => {
+            const pathname = window.location.pathname;
+            // If pathname is like /authentication/login.html, extract /authentication
+            const match = pathname.match(/^(\/[^\/]+)/);
+            return match ? match[1] : '';
+        };
+        
+        const basePath = getBasePath();
+        let API_URL = `${window.location.origin}${basePath}/api`;
+        
+        // Fallback to localhost for local development
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            API_URL = 'http://localhost:3000/api';
+        }
+        
+        let currentEmail = '';
+        let isPending = false;
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            document.getElementById('success-message').style.display = 'none';
+        }
+        
+        function showSuccess(message) {
+            const successDiv = document.getElementById('success-message');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
+        }
+        
+        function hideMessages() {
+            document.getElementById('error-message').style.display = 'none';
+            document.getElementById('success-message').style.display = 'none';
+        }
+        
+        async function checkEmail() {
+            const email = document.getElementById('email').value.trim();
+            
+            if (!email) {
+                showError('Please enter your email address');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/check-email`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ email })
+                });
+                
+                const data = await response.json();
+                
+                if (data.approved) {
+                    currentEmail = email;
+                    isPending = data.pending;
+                    
+                    if (isPending) {
+                        // Show password setup
+                        document.getElementById('email-step').style.display = 'none';
+                        document.getElementById('password-step').style.display = 'block';
+                        document.getElementById('confirm-password-group').style.display = 'block';
+                        document.getElementById('password-btn').textContent = 'Set Password';
+                        document.getElementById('step-indicator').textContent = 'Step 2 of 2 - Set Password';
+                        showSuccess(data.message || 'Email found. Please set your password.');
+                    } else {
+                        // Show login
+                        document.getElementById('email-step').style.display = 'none';
+                        document.getElementById('password-step').style.display = 'block';
+                        document.getElementById('confirm-password-group').style.display = 'none';
+                        document.getElementById('password-btn').textContent = 'Login';
+                        document.getElementById('step-indicator').textContent = 'Step 2 of 2 - Enter Password';
+                        hideMessages();
+                    }
+                } else {
+                    showError(data.error || 'Email not found. Please contact administrator.');
+                }
+            } catch (error) {
+                showError('Network error. Please try again.');
+                console.error('Error:', error);
+            }
+        }
+        
+        async function handlePassword() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (!password) {
+                showError('Please enter your password');
+                return;
+            }
+            
+            if (isPending) {
+                if (password !== confirmPassword) {
+                    showError('Passwords do not match');
+                    return;
+                }
+                
+                if (password.length < 6) {
+                    showError('Password must be at least 6 characters');
+                    return;
+                }
+                
+                try {
+                    const response = await fetch(`${API_URL}/auth/set-password`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'include',
+                        body: JSON.stringify({ email: currentEmail, password })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        showSuccess('Password set successfully! Redirecting...');
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 1500);
+                    } else {
+                        showError(data.error || 'Failed to set password');
+                    }
+                } catch (error) {
+                    showError('Network error. Please try again.');
+                    console.error('Error:', error);
+                }
+            } else {
+                try {
+                    const response = await fetch(`${API_URL}/auth/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'include',
+                        body: JSON.stringify({ email: currentEmail, password })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        showSuccess('Login successful! Redirecting...');
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 1500);
+                    } else {
+                        showError(data.error || 'Invalid email or password');
+                    }
+                } catch (error) {
+                    showError('Network error. Please try again.');
+                    console.error('Error:', error);
+                }
+            }
+        }
+        
+        // Allow Enter key to submit
+        document.getElementById('email').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkEmail();
+        });
+        
+        document.getElementById('password').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handlePassword();
+        });
+        
+        document.getElementById('confirm-password').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handlePassword();
+        });
+        
+        // Check if already logged in
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch(`${API_URL}/auth/me`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                if (data.loggedIn) {
+                    window.location.href = 'index.html';
+                }
+            } catch (error) {
+                console.error('Error checking auth:', error);
+            }
+        });
+    </script>
+</body>
+</html>
+

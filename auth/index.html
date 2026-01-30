@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<!-- This site was created in Webflow. https://webflow.com -->
+<!-- Last Published: Fri Oct 03 2025 06:47:09 GMT+0000 (Coordinated Universal Time) -->
+<html data-wf-domain="dash-template.webflow.io" data-wf-page="6059d479a501da25a83755f0" data-wf-site="6057ab51530cb39d3fdac75d" lang="en" class=" w-mod-js">
+    <head>
+        <meta charset="utf-8">
+        <title>Dash - Webflow HTML website template</title>
+        <meta content="Dash - Webflow HTML website template" property="og:title">
+        <meta content="Dash - Webflow HTML website template" property="twitter:title">
+        <meta content="width=device-width, initial-scale=1" name="viewport">
+        <meta content="Webflow" name="generator">
+    <link href="css/dash-template.webflow.shared.272232231.css" rel="stylesheet" type="text/css">
+    <link href="css/dark-mode.css" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com" rel="preconnect">
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin="anonymous">
+    <script src="js/webfont.js" type="text/javascript"></script>
+    <script src="js/theme.js" type="text/javascript"></script>
+        <script type="text/javascript">
+            WebFont.load({
+                google: {
+                    families: ["Inter:regular,500,600,700"]
+                }
+            });
+        </script>
+        <script type="text/javascript">
+            !function(o, c) {
+                var n = c.documentElement
+                  , t = " w-mod-";
+                n.className += t + "js",
+                ("ontouchstart"in o || o.DocumentTouch && c instanceof DocumentTouch) && (n.className += t + "touch")
+            }(window, document);
+        </script>
+        <link href="images/608954b07e50af32f41306b7_Dash%20Favicon%20Small.png" rel="shortcut icon" type="image/x-icon">
+        <link href="images/608954b52729362300b39dc9_Dash%20Logo.png" rel="apple-touch-icon">
+        <style>
+            .table-row._7-columns {
+                display: grid !important;
+                grid-template-columns: 2fr 1.5fr 1.5fr 1.5fr 2fr 1fr 2fr !important;
+                gap: 15px !important;
+                align-items: center !important;
+                white-space: nowrap !important;
+            }
+            .table-headers._7-columns {
+                display: grid !important;
+                grid-template-columns: 2fr 1.5fr 1.5fr 1.5fr 2fr 1fr 2fr !important;
+                gap: 15px !important;
+                white-space: nowrap !important;
+            }
+            .table-row._7-columns > div {
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                white-space: nowrap !important;
+            }
+            .table-row._7-columns > div:last-child {
+                overflow: visible !important;
+            }
+            .table-row._8-columns {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1.5fr !important;
+                gap: 20px !important;
+                align-items: center !important;
+                white-space: nowrap !important;
+            }
+            .table-headers._8-columns {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1.5fr !important;
+                gap: 20px !important;
+                white-space: nowrap !important;
+            }
+            .table-row._8-columns > div {
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                white-space: nowrap !important;
+                min-width: 0 !important;
+            }
+            .table-row._8-columns > div:last-child {
+                overflow: visible !important;
+            }
+            .table-headers._8-columns > div {
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                white-space: nowrap !important;
+                min-width: 0 !important;
+            }
+            #open-generate-modal-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            }
+            .modal-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1000;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+            .modal-overlay.active {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                opacity: 1;
+            }
+            .modal-card {
+                background: white;
+                border-radius: 12px;
+                padding: 30px;
+                max-width: 600px;
+                width: 90%;
+                max-height: 90vh;
+                overflow-y: auto;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                transform: scale(0.9) translateY(-20px);
+                opacity: 0;
+                transition: transform 0.3s ease, opacity 0.3s ease;
+            }
+            .modal-overlay.active .modal-card {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+            .modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 25px;
+                padding-bottom: 15px;
+                border-bottom: 2px solid #e0e0e0;
+            }
+            .modal-header h3 {
+                margin: 0;
+                font-size: 1.5em;
+                color: #333;
+            }
+            .modal-close {
+                background: none;
+                border: none;
+                font-size: 1.5em;
+                cursor: pointer;
+                color: #666;
+                padding: 0;
+                width: 30px;
+                height: 30px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                transition: background 0.2s;
+            }
+            .modal-close:hover {
+                background: #f0f0f0;
+            }
+            .modal-form {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+            }
+            .form-group {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .form-group label {
+                font-weight: 600;
+                color: #333;
+                font-size: 0.9em;
+            }
+            .form-group input,
+            .form-group select {
+                padding: 12px;
+                border: 2px solid #e0e0e0;
+                border-radius: 5px;
+                font-size: 1em;
+                transition: border-color 0.3s;
+            }
+            .form-group input:focus,
+            .form-group select:focus {
+                outline: none;
+                border-color: #667eea;
+            }
+            .duration-group {
+                display: grid;
+                grid-template-columns: 2fr 1fr;
+                gap: 10px;
+            }
+            .modal-actions {
+                display: flex;
+                gap: 10px;
+                justify-content: flex-end;
+                margin-top: 10px;
+            }
+            .modal-btn {
+                padding: 12px 24px;
+                border: none;
+                border-radius: 5px;
+                font-weight: 600;
+                cursor: pointer;
+                font-size: 1em;
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+            .modal-btn-primary {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+            }
+            .modal-btn-secondary {
+                background: #f0f0f0;
+                color: #333;
+            }
+            .modal-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            }
+            #generate-message {
+                margin-top: 15px;
+                padding: 10px;
+                border-radius: 5px;
+                font-weight: 600;
+            }
+            .sidebar-profile-wrapper {
+                margin-top: auto;
+                padding: 16px 24px;
+                border-top: 1px solid #e0e0e0;
+            }
+            .sidebar-profile-wrapper .banner-avatar-wrapper {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                text-decoration: none;
+                color: inherit;
+            }
+            .sidebar-profile-wrapper .banner-avatar-image {
+                width: 48px;
+                height: 48px;
+                border-radius: 50%;
+                object-fit: cover;
+            }
+            .sidebar-profile-wrapper .banner-avatar-name {
+                margin: 0;
+                font-size: 0.95em;
+                font-weight: 600;
+                color: #333;
+            }
+            .sidebar-profile-wrapper .banner-avatar-caption {
+                font-size: 0.85em;
+                color: #666;
+                margin-top: 2px;
+            }
+            /* Dropdown menu styling */
+            .nav-dropdown {
+                display: flex;
+                flex-direction: column;
+            }
+            .nav-dropdown .nav-link {
+                display: flex;
+                align-items: center;
+            }
+            .nav-submenu {
+                display: none;
+                flex-direction: column;
+            }
+            .nav-submenu .nav-link {
+                padding-left: 20px;
+            }
+            .dropdown-arrow {
+                width: 20px;
+                height: 20px;
+                opacity: 0.7;
+                transition: transform 0.3s ease;
+                filter: brightness(0) saturate(100%) invert(40%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
+            }
+            .nav-link .dropdown-arrow {
+                filter: brightness(0) saturate(100%) invert(40%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
+            }
+            .nav-link.w--current {
+                color: var(--primary-blue);
+            }
+            .nav-link.w--current div {
+                color: var(--primary-blue);
+            }
+            .nav-link.w--current .nav-icon {
+                filter: brightness(0) saturate(100%) invert(28%) sepia(96%) saturate(6070%) hue-rotate(257deg) brightness(96%) contrast(104%);
+            }
+            /* Increase width of all elements */
+            .dashboard-content {
+                padding: 40px 50px !important;
+            }
+            .dashboard-container {
+                max-width: 100% !important;
+                width: 100% !important;
+            }
+            .main-grid {
+                grid-column-gap: 30px !important;
+                grid-row-gap: 30px !important;
+            }
+            .module {
+                padding: 30px !important;
+            }
+            .table-module {
+                padding: 30px !important;
+            }
+            ._4-grid {
+                grid-column-gap: 30px !important;
+                grid-row-gap: 30px !important;
+            }
+            /* Tab filter buttons styling */
+            .in-page-menu {
+                display: flex;
+                gap: 8px;
+            }
+            .in-page-menu-link {
+                position: relative;
+                transition: all 0.3s ease;
+                background-color: white !important;
+                border: 1px solid var(--grey-5) !important;
+                color: #666666 !important;
+            }
+            .in-page-menu-link > div {
+                position: relative;
+                z-index: 2;
+                transition: color 0.3s ease;
+            }
+            .in-page-menu-link:not(.w--current) {
+                background-color: white !important;
+                border-color: var(--grey-5) !important;
+                color: #666666 !important;
+            }
+            .in-page-menu-link:not(.w--current) > div {
+                color: #666666 !important;
+            }
+            .in-page-menu-link.w--current {
+                background-color: var(--primary-blue) !important;
+                border-color: var(--primary-blue) !important;
+                color: white !important;
+            }
+            .in-page-menu-link.w--current > div {
+                color: white !important;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="dashboard">
+            <div data-collapse="medium" data-animation="default" data-duration="400" data-easing="ease" data-easing2="ease" role="banner" class="dashboard-sidebar w-nav">
+                <div class="sidebar-content">
+                    <div class="sidebar-logo-wrapper">
+                        <a href="/" class="w-nav-brand">
+                            <img src="images/60586883ea59be120545c340_Dash%20Logo.svg" loading="lazy" alt="" class="sidebar-logo">
+                        </a>
+                    </div>
+                    <a href="dashboard.html" class="nav-link w-inline-block">
+                        <img src="images/icon-home.svg" loading="lazy" alt="" class="nav-icon">
+                        <div>Dashboard</div>
+                    </a>
+                    <a href="application.html" class="nav-link w-inline-block">
+                        <img src="images/icon-laptop.svg" loading="lazy" alt="" class="nav-icon">
+                        <div>Application</div>
+                    </a>
+                    <a href="index.html" aria-current="page" class="nav-link w-inline-block w--current">
+                        <img src="images/icon-key.svg" loading="lazy" alt="" class="nav-icon">
+                        <div>Licenses</div>
+                    </a>
+                    <div class="nav-dropdown">
+                        <a href="#" class="nav-link w-inline-block" onclick="toggleProtectionMenu(event)">
+                            <img src="images/icon-shield.svg" loading="lazy" alt="" class="nav-icon">
+                            <div>Protection</div>
+                            <img src="images/60586d393a273570ab97cc78_chevron-down.svg" alt="" class="dropdown-arrow" style="margin-left: auto; transition: transform 0.3s;">
+                        </a>
+                        <div class="nav-submenu" id="protection-submenu" style="display: none; padding-left: 20px;">
+                            <a href="protection.html" class="nav-link w-inline-block">
+                                <img src="images/icon-file-text.svg" loading="lazy" alt="" class="nav-icon">
+                                <div>Security Logs</div>
+                            </a>
+                            <a href="messages.html" class="nav-link w-inline-block">
+                                <img src="images/icon-message-circle.svg" loading="lazy" alt="" class="nav-icon">
+                                <div>Custom Messages</div>
+                            </a>
+                        </div>
+                    </div>
+                    <a href="/resellers" class="nav-link w-inline-block">
+                        <img src="images/6058703e101182eaf273ae92_Team.svg" loading="lazy" alt="" class="nav-icon">
+                        <div>Resellers</div>
+                    </a>
+                    <div class="nav-divider"></div>
+                    <a href="settings.html" class="nav-link w-inline-block">
+                        <img src="images/icon-settings.svg" loading="lazy" alt="" class="nav-icon">
+                        <div>Settings</div>
+                    </a>
+                    <a href="admin.html" class="nav-link w-inline-block">
+                        <img src="images/icon-admin.svg" loading="lazy" alt="" class="nav-icon">
+                        <div>Administrator</div>
+                    </a>
+                    <!-- User Profile -->
+                    <div class="sidebar-profile-wrapper">
+                        <div class="banner-avatar-wrapper" style="display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; cursor: pointer;" onclick="logout()">
+                            <div id="user-avatar" class="banner-avatar-image" style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 1.2em;">U</div>
+                            <div>
+                                <h5 id="user-email" class="banner-avatar-name">Loading...</h5>
+                                <div class="banner-avatar-caption">Click to logout</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mobile-bar">
+                    <div class="mobile-bar-menu">
+                        <a href="#" class="mobile-bar-link w-inline-block">
+                            <img src="images/icon-home.svg" loading="lazy" alt="">
+                        </a>
+                        <a href="#" class="mobile-bar-link w-inline-block">
+                            <img src="images/6058703e233c35f06d95eeab_Projects.svg" loading="lazy" alt="">
+                        </a>
+                        <a data-w-id="da3d71f2-0efd-7bc8-77ff-08fc09cd7904" href="#" class="mobile-menu-button w-inline-block">
+                            <div data-is-ix2-target="1" class="lottie-menu-icon" data-w-id="da3d71f2-0efd-7bc8-77ff-08fc09cd7905" data-animation-type="lottie" data-src="https://cdn.prod.website-files.com/6057ab51530cb39d3fdac75d/60587725e051a2be05473dcc_Lottie%20Menu%20Animation.json" data-loop="0" data-direction="1" data-autoplay="0" data-renderer="svg" data-default-duration="2" data-duration="0" data-ix2-initial-state="0"></div>
+                        </a>
+                        <a href="#" class="mobile-bar-link w-inline-block">
+                            <img src="images/6058703e3a273545cf97d31b_Profile.svg" loading="lazy" alt="">
+                        </a>
+                        <a href="#" class="mobile-bar-link w-inline-block">
+                            <img src="images/icon-settings.svg" loading="lazy" alt="">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="dashboard-content">
+                <div class="dashboard-container">
+                    <div class="w-layout-grid main-grid">
+                        <div class="alert-module">
+                            <div id="alert-text">Data Loaded Successfully!</div>
+                            <a href="#" class="alert-module-link w-inline-block">
+                                <img src="images/6058bf1274d92808ed9a6a84_x.svg" loading="lazy" alt="">
+                            </a>
+                        </div>
+                        <div class="w-layout-grid _4-grid">
+                            <div class="module">
+                                <div class="content-chart">
+                                    <div class="chart-square">
+                                        <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon" style="width: 24px; height: 24px;">
+                                            <path d="M 30 5 C 22.838262 5 17 10.838262 17 18 C 17 18.882345 17.182742 19.703331 17.351562 20.527344 L 5.4394531 32.439453 A 1.50015 1.50015 0 0 0 5 33.5 L 5 41.5 A 1.50015 1.50015 0 0 0 6.5 43 L 14.5 43 A 1.50015 1.50015 0 0 0 16 41.5 L 16 39 L 19.5 39 A 1.50015 1.50015 0 0 0 21 37.5 L 21 34 L 24.5 34 A 1.50015 1.50015 0 0 0 26 32.5 L 26 30.294922 C 27.271145 30.709396 28.595703 31 30 31 C 37.161738 31 43 25.161738 43 18 C 43 10.838262 37.161738 5 30 5 z M 30 8 C 35.540262 8 40 12.459738 40 18 C 40 23.540262 35.540262 28 30 28 C 28.262518 28 26.639202 27.56058 25.21875 26.785156 A 1.50015 1.50015 0 0 0 23 28.101562 L 23 31 L 19.5 31 A 1.50015 1.50015 0 0 0 18 32.5 L 18 36 L 14.5 36 A 1.50015 1.50015 0 0 0 13 37.5 L 13 40 L 8 40 L 8 34.121094 L 19.988281 22.132812 A 1.50015 1.50015 0 0 0 20.373047 20.669922 C 20.133878 19.809089 20 18.919659 20 18 C 20 12.459738 24.459738 8 30 8 z M 32 13 A 3 3 0 0 0 32 19 A 3 3 0 0 0 32 13 z" fill="#763ff9" stroke="#763ff9" stroke-width="0.5"/>
+                                        </svg>
+                                        <div class="light-fill bg-primary-blue"></div>
+                                    </div>
+                                    <div class="div-block">
+                                        <div class="caption">Total Licenses</div>
+                                        <div class="numbers-wrapper">
+                                            <h3 class="number">0</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="module">
+                                <div class="content-chart">
+                                    <div class="chart-square">
+                                        <svg width="24" height="24" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon" style="width: 24px; height: 24px;">
+                                            <path d="M8.33333 2.5L3.75 7.08333L1.66666 5" stroke="#01dda5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        <div class="light-fill bg-primary-green"></div>
+                                    </div>
+                                    <div class="div-block">
+                                        <div class="caption">Active</div>
+                                        <div class="numbers-wrapper">
+                                            <h3 class="number">0</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="w-node-_7208daec-035a-49f2-4e9b-4a6236ac5087-a83755f0" class="module">
+                                <div class="content-chart">
+                                    <div class="chart-square">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon" style="width: 24px; height: 24px;">
+                                            <circle cx="12" cy="12" r="10" stroke="#ffb731" stroke-width="3"/>
+                                            <line x1="12" y1="6" x2="12" y2="12" stroke="#ffb731" stroke-width="3" stroke-linecap="round"/>
+                                            <line x1="12" y1="12" x2="16" y2="16" stroke="#ffb731" stroke-width="3" stroke-linecap="round"/>
+                                        </svg>
+                                        <div class="light-fill bg-primary-yellow"></div>
+                                    </div>
+                                    <div class="div-block">
+                                        <div class="caption">Expired</div>
+                                        <div class="numbers-wrapper">
+                                            <h3 class="number">0</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="module">
+                                <div class="content-chart">
+                                    <div class="chart-square">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon" style="width: 24px; height: 24px;">
+                                            <circle cx="12" cy="12" r="10" stroke="#ff0174" stroke-width="2" opacity="0.85"/>
+                                            <line x1="15" y1="9" x2="9" y2="15" stroke="#ff0174" stroke-width="2" stroke-linecap="round" opacity="0.85"/>
+                                            <line x1="9" y1="9" x2="15" y2="15" stroke="#ff0174" stroke-width="2" stroke-linecap="round" opacity="0.85"/>
+                                        </svg>
+                                        <div class="light-fill bg-primary-rose"></div>
+                                    </div>
+                                    <div class="div-block">
+                                        <div class="caption">Banned</div>
+                                        <div class="numbers-wrapper">
+                                            <h3 class="number">0</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="grid-column: 1 / -1; margin-top: 20px; display: flex; justify-content: flex-end; gap: 12px;">
+                        <button id="open-pause-modal-btn" style="padding: 12px 24px; background: #ffb731; color: white; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; font-size: 0.95em; transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; gap: 8px;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
+                                <rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor"/>
+                                <rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor"/>
+                            </svg>
+                            Pause
+                        </button>
+                        <button id="open-extend-modal-btn" style="padding: 12px 24px; background: #4caf50; color: white; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; font-size: 0.95em; transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; gap: 8px;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            Extend
+                        </button>
+                        <button id="open-generate-modal-btn" style="padding: 12px 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; font-size: 0.95em; transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; gap: 8px;">
+                            <img src="images/icon-key.svg" alt="" style="width: 18px; height: 18px; filter: brightness(0) invert(1); flex-shrink: 0;">
+                            Generate License
+                        </button>
+                    </div>
+                    <div data-duration-in="300" data-duration-out="100" data-current="All Licenses" data-easing="ease" class="w-tabs">
+                        <div class="in-page-menu w-tab-menu">
+                            <a data-w-tab="All Orders" class="in-page-menu-link w-inline-block w-tab-link w--current">
+                                <div>All licenses</div>
+                            </a>
+                            <a data-w-tab="Shipped" class="in-page-menu-link w-inline-block w-tab-link">
+                                <div>Active</div>
+                            </a>
+                            <a data-w-tab="Processing" class="in-page-menu-link w-inline-block w-tab-link">
+                                <div>Not Activated</div>
+                            </a>
+                            <a data-w-tab="Expired" class="in-page-menu-link w-inline-block w-tab-link">
+                                <div>Expired</div>
+                            </a>
+                            <a data-w-tab="Cancelled" class="in-page-menu-link w-inline-block w-tab-link">
+                                <div>Banned</div>
+                            </a>
+                        </div>
+                        <div class="tabs-content w-tab-content">
+                            <div data-w-tab="All Orders" class="w-tab-pane w--tab-active">
+                                <div class="table-module">
+                                    <div class="table-header">
+                                        <h4 class="no-space-bottom">Licenses</h4>
+                                    </div>
+                                    <div class="table-content">
+                                        <div class="table-list">
+                                            <div class="w-layout-grid table-headers _8-columns">
+                                                <div class="caption-large">License Key</div>
+                                                <div class="caption-large">Application</div>
+                                                <div class="caption-large">Duration</div>
+                                                <div class="caption-large">Activated At</div>
+                                                <div class="caption-large">Expires</div>
+                                                <div class="caption-large">Status</div>
+                                                <div class="caption-large">HWID</div>
+                                                <div class="caption-large">Action</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="table-bottom-caption">
+                                        <div id="table-caption">All licenses are updated automatically</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div data-w-tab="Shipped" class="w-tab-pane">
+                                <div class="table-module">
+                                    <div class="table-header">
+                                        <h4 class="no-space-bottom">Licenses (Active)</h4>
+                                    </div>
+                                    <div class="table-content">
+                                        <div class="table-list">
+                                            <div class="w-layout-grid table-headers _8-columns">
+                                                <div class="caption-large">License Key</div>
+                                                <div class="caption-large">Application</div>
+                                                <div class="caption-large">Duration</div>
+                                                <div class="caption-large">Activated At</div>
+                                                <div class="caption-large">Expires</div>
+                                                <div class="caption-large">Status</div>
+                                                <div class="caption-large">HWID</div>
+                                                <div class="caption-large">Action</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="table-bottom-caption">
+                                        <div id="table-caption">All licenses are updated automatically</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div data-w-tab="Processing" class="w-tab-pane">
+                                <div class="table-module">
+                                    <div class="table-header">
+                                        <h4 class="no-space-bottom">Licenses (Not Activated)</h4>
+                                    </div>
+                                    <div class="table-content">
+                                        <div class="table-list">
+                                            <div class="w-layout-grid table-headers _8-columns">
+                                                <div class="caption-large">License Key</div>
+                                                <div class="caption-large">Application</div>
+                                                <div class="caption-large">Duration</div>
+                                                <div class="caption-large">Activated At</div>
+                                                <div class="caption-large">Expires</div>
+                                                <div class="caption-large">Status</div>
+                                                <div class="caption-large">HWID</div>
+                                                <div class="caption-large">Action</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="table-bottom-caption">
+                                        <div id="table-caption">All licenses are updated automatically</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div data-w-tab="Expired" class="w-tab-pane">
+                                <div class="table-module overflow-auto">
+                                    <div class="table-header">
+                                        <h4 class="no-space-bottom">Licenses (Expired)</h4>
+                                    </div>
+                                    <div class="table-content">
+                                        <div class="table-list">
+                                            <div class="w-layout-grid table-headers _8-columns">
+                                                <div class="caption-large">License Key</div>
+                                                <div class="caption-large">Application</div>
+                                                <div class="caption-large">Duration</div>
+                                                <div class="caption-large">Activated At</div>
+                                                <div class="caption-large">Expires</div>
+                                                <div class="caption-large">Status</div>
+                                                <div class="caption-large">HWID</div>
+                                                <div class="caption-large">Action</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="table-bottom-caption">
+                                        <div id="table-caption">All licenses are updated automatically</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div data-w-tab="Cancelled" class="w-tab-pane">
+                                <div class="table-module overflow-auto">
+                                    <div class="table-header">
+                                        <h4 class="no-space-bottom">Licenses (Banned)</h4>
+                                    </div>
+                                    <div class="table-content">
+                                        <div class="table-list">
+                                            <div class="w-layout-grid table-headers _8-columns">
+                                                <div class="caption-large">License Key</div>
+                                                <div class="caption-large">Application</div>
+                                                <div class="caption-large">Duration</div>
+                                                <div class="caption-large">Activated At</div>
+                                                <div class="caption-large">Expires</div>
+                                                <div class="caption-large">Status</div>
+                                                <div class="caption-large">HWID</div>
+                                                <div class="caption-large">Action</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="table-bottom-caption">
+                                        <div id="table-caption">All licenses are updated automatically</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <span class="footer-text">© 2023-2026 Made with ❤ by Varp Softwares. All rights reserved.</span>
+            </div>
+        </div>
+        <div class="mobile-bottom-spacing"></div>
+    </div>
+    <!-- Generate License Modal -->
+    <div id="generate-modal-overlay" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Generate New License</h3>
+                <button class="modal-close" onclick="closeGenerateModal()">&times;</button>
+            </div>
+            <form id="generate-license-form" class="modal-form">
+                <div class="form-group">
+                    <label for="license-app-select">Application</label>
+                    <select id="license-app-select" required>
+                        <option value="">Select Application</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Duration</label>
+                    <div class="duration-group">
+                        <input type="number" id="license-duration" placeholder="Duration" min="1">
+                        <select id="license-duration-unit">
+                            <option value="seconds">Seconds</option>
+                            <option value="minutes">Minutes</option>
+                            <option value="hours">Hours</option>
+                            <option value="days" selected>Days</option>
+                            <option value="unlimited">Unlimited</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="license-quantity">Quantity</label>
+                    <input type="number" id="license-quantity" placeholder="Number of licenses" min="1" value="1" required>
+                </div>
+                <div id="generate-message"></div>
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn modal-btn-secondary" onclick="closeGenerateModal()">Cancel</button>
+                    <button type="submit" class="modal-btn modal-btn-primary">Generate License</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Pause All Licenses Modal -->
+    <div id="pause-modal-overlay" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Pause All Active Licenses</h3>
+                <button class="modal-close" onclick="closePauseModal()">&times;</button>
+            </div>
+            <div class="modal-form">
+                <div class="form-group">
+                    <label for="pause-app-select">Application</label>
+                    <select id="pause-app-select" required>
+                        <option value="">All Applications</option>
+                    </select>
+                    <div class="small-text text-grey-3" style="margin-top: 8px;">Select application to pause licenses for, or leave as "All Applications" to pause all active licenses.</div>
+                </div>
+                <div id="pause-message"></div>
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn modal-btn-secondary" onclick="closePauseModal()">Cancel</button>
+                    <button type="button" class="modal-btn modal-btn-primary" onclick="confirmPauseAll()">Pause Licenses</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Extend All Licenses Modal -->
+    <div id="extend-modal-overlay" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Extend All Active Licenses</h3>
+                <button class="modal-close" onclick="closeExtendModal()">&times;</button>
+            </div>
+            <div class="modal-form">
+                <div class="form-group">
+                    <label for="extend-app-select">Application</label>
+                    <select id="extend-app-select" required>
+                        <option value="">All Applications</option>
+                    </select>
+                    <div class="small-text text-grey-3" style="margin-top: 8px;">Select application to extend licenses for, or leave as "All Applications" to extend all active licenses.</div>
+                </div>
+                <div class="form-group">
+                    <label>Duration</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="number" id="extend-duration" placeholder="Duration" min="1" required>
+                        <select id="extend-duration-unit" required>
+                            <option value="seconds">Seconds</option>
+                            <option value="minutes">Minutes</option>
+                            <option value="hours">Hours</option>
+                            <option value="days" selected>Days</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="extend-message"></div>
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn modal-btn-secondary" onclick="closeExtendModal()">Cancel</button>
+                    <button type="button" class="modal-btn modal-btn-primary" onclick="confirmExtendAll()">Extend Licenses</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<script src="js/jquery-3.5.1.min.dc5e7f18c8.js" type="text/javascript" crossorigin="anonymous"></script>
+<script src="js/webflow.schunk.57d5559d2f0cd9f8.js" type="text/javascript"></script>
+<script src="js/webflow.schunk.fb41565a54c57ff6.js" type="text/javascript"></script>
+<script src="js/webflow.schunk.121b0d7ff03e0f4a.js" type="text/javascript"></script>
+<script src="js/webflow.33c9cbd5.185f4854ea36279a.js" type="text/javascript"></script>
+<script src="js/auth.js" type="text/javascript"></script>
+<script>
+    function toggleProtectionMenu(event) {
+        event.preventDefault();
+        const submenu = document.getElementById('protection-submenu');
+        const arrow = event.currentTarget.querySelector('.dropdown-arrow');
+        if (submenu.style.display === 'none') {
+            submenu.style.display = 'block';
+            arrow.style.transform = 'rotate(180deg)';
+        } else {
+            submenu.style.display = 'none';
+            arrow.style.transform = 'rotate(0deg)';
+        }
+    }
+    
+    // Auto-expand if on protection or messages page
+    if (window.location.pathname.includes('protection.html') || window.location.pathname.includes('messages.html')) {
+        document.addEventListener('DOMContentLoaded', function() {
+            const submenu = document.getElementById('protection-submenu');
+            const arrow = document.querySelector('.nav-dropdown .dropdown-arrow');
+            if (submenu) {
+                submenu.style.display = 'block';
+                if (arrow) arrow.style.transform = 'rotate(180deg)';
+            }
+        });
+    }
+</script><script src="js/nav-permissions.js"></script></body></html>
+
+
+
+
+
+
+
+
+
+

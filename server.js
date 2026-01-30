@@ -771,6 +771,22 @@ function generateDefaultLicenseKey() {
     return licenseKey;
 }
 
+// Helper to retry queries when tables aren't initialized yet (serverless cold starts)
+function isMissingTableError(err, tableName) {
+    return !!(err && err.message && err.message.toLowerCase().includes('no such table') && err.message.toLowerCase().includes(tableName));
+}
+
+function dbGetWithInitRetry(sql, params, callback) {
+    db.get(sql, params, (err, row) => {
+        if (isMissingTableError(err, 'users')) {
+            console.warn('[DB] Users table missing, initializing and retrying...');
+            initializeDatabase();
+            return setTimeout(() => db.get(sql, params, callback), 200);
+        }
+        return callback(err, row);
+    });
+}
+
 // API Routes
 
 // ==================== AUTHENTICATION API ====================
@@ -827,8 +843,9 @@ app.post('/api/auth/check-email', (req, res) => {
     }
     
     // Normal user check
-    db.get('SELECT id, status FROM users WHERE email = ?', [email], (err, user) => {
+    dbGetWithInitRetry('SELECT id, status FROM users WHERE email = ?', [email], (err, user) => {
         if (err) {
+            console.error('[Auth] check-email db error:', err.message);
             return res.status(500).json({ approved: false, error: 'Database error' });
         }
         
@@ -859,8 +876,9 @@ app.post('/api/auth/login', (req, res) => {
     
     // Special handling for admin@admin.com - ensure it exists and is Active
     if (email === 'admin@admin.com') {
-        db.get('SELECT id, email, password_hash, status FROM users WHERE email = ?', [email], (err, user) => {
+        dbGetWithInitRetry('SELECT id, email, password_hash, status FROM users WHERE email = ?', [email], (err, user) => {
             if (err) {
+                console.error('[Login] admin lookup error:', err.message);
                 return res.status(500).json({ success: false, error: 'Database error' });
             }
             
@@ -877,8 +895,11 @@ app.post('/api/auth/login', (req, res) => {
                     const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
                     if (passwordHash === defaultPassword) {
                         // Get the newly created user
-                        db.get('SELECT id, email FROM users WHERE email = ?', [email], (getErr, newUser) => {
+                        dbGetWithInitRetry('SELECT id, email FROM users WHERE email = ?', [email], (getErr, newUser) => {
                             if (getErr || !newUser) {
+                                if (getErr) {
+                                    console.error('[Login] admin reload error:', getErr.message);
+                                }
                                 return res.status(500).json({ success: false, error: 'Database error' });
                             }
                             req.session.userId = newUser.id;
@@ -933,7 +954,7 @@ app.post('/api/auth/login', (req, res) => {
                     // Check if provided password matches
                     if (inputPasswordHash === correctPasswordHash) {
                         // Re-load admin to ensure id/email are present
-                        return db.get('SELECT id, email FROM users WHERE email = ?', ['admin@admin.com'], (getErr, adminUser) => {
+                        return dbGetWithInitRetry('SELECT id, email FROM users WHERE email = ?', ['admin@admin.com'], (getErr, adminUser) => {
                             if (getErr || !adminUser || !adminUser.id) {
                                 console.error('[Login] Error reloading admin user:', getErr?.message);
                                 return res.status(500).json({ success: false, error: 'Database error' });
@@ -977,7 +998,7 @@ app.post('/api/auth/login', (req, res) => {
             // Admin exists with correct password and Active status - check input password
             if (inputPasswordHash === correctPasswordHash) {
                 if (!user || !user.id) {
-                    return db.get('SELECT id, email FROM users WHERE email = ?', ['admin@admin.com'], (getErr, adminUser) => {
+                    return dbGetWithInitRetry('SELECT id, email FROM users WHERE email = ?', ['admin@admin.com'], (getErr, adminUser) => {
                         if (getErr || !adminUser || !adminUser.id) {
                             console.error('[Login] Error reloading admin user:', getErr?.message);
                             return res.status(500).json({ success: false, error: 'Database error' });
@@ -1046,8 +1067,9 @@ app.post('/api/auth/login', (req, res) => {
     }
     
     // Normal user login
-    db.get('SELECT id, email, password_hash, status FROM users WHERE email = ?', [email], (err, user) => {
+    dbGetWithInitRetry('SELECT id, email, password_hash, status FROM users WHERE email = ?', [email], (err, user) => {
         if (err) {
+            console.error('[Login] user lookup error:', err.message);
             return res.status(500).json({ success: false, error: 'Database error' });
         }
         

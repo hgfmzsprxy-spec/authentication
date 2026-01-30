@@ -6,7 +6,12 @@ const path = require('path');
 const https = require('https');
 const http = require('http');
 const session = require('express-session');
-const SQLiteStore = require('connect-sqlite3')(session);
+
+// Only import SQLiteStore locally (it requires sqlite3 which doesn't work in Vercel)
+let SQLiteStore = null;
+if (!process.env.VERCEL) {
+    SQLiteStore = require('connect-sqlite3')(session);
+}
 
 // Use database adapter (libsql in Vercel, sqlite3 locally)
 const db = require('./db-adapter');

@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const crypto = require('crypto');
 const path = require('path');
 const https = require('https');
@@ -65,6 +66,9 @@ if (!process.env.VERCEL) {
 
 app.use(session(sessionConfig));
 
+// Cookie parser (needed for signed cookies in Vercel)
+app.use(cookieParser(sessionConfig.secret));
+
 // Middleware
 const corsOptions = {
     origin: true,
@@ -82,6 +86,27 @@ app.use('/api', (req, res, next) => {
     next();
 });
 
+// Helper function to get userId from cookie (for Vercel compatibility)
+function getUserIdFromRequest(req) {
+    // Try session first
+    if (req.session && req.session.userId) {
+        return req.session.userId;
+    }
+    
+    // In Vercel, check signed userId cookie as fallback
+    if (process.env.VERCEL) {
+        const userId = req.signedCookies?.userId || req.cookies?.userId;
+        if (userId) {
+            // Restore session from cookie
+            req.session = req.session || {};
+            req.session.userId = parseInt(userId);
+            return parseInt(userId);
+        }
+    }
+    
+    return null;
+}
+
 // Authentication middleware
 function requireAuth(req, res, next) {
     // Allow access to all API endpoints (they handle their own auth)
@@ -89,13 +114,22 @@ function requireAuth(req, res, next) {
         return next();
     }
     
-    // Debug session
+    // Get userId from session or cookie
+    const userId = getUserIdFromRequest(req);
+    
+    // Debug
     console.log('[Auth] Path:', req.path);
     console.log('[Auth] Session exists:', !!req.session);
     console.log('[Auth] Session userId:', req.session?.userId);
+    console.log('[Auth] UserId from helper:', userId);
     console.log('[Auth] Cookies:', req.headers.cookie);
     
-    if (req.session && req.session.userId) {
+    if (userId) {
+        // Ensure session is set
+        if (!req.session) {
+            req.session = {};
+        }
+        req.session.userId = userId;
         console.log('[Auth] User authenticated, allowing access');
         return next();
     }
@@ -854,16 +888,18 @@ app.post('/api/auth/login', (req, res) => {
                                     return res.status(500).json({ success: false, error: 'Session error' });
                                 }
                                 console.log('[Login] Session saved successfully, Session ID:', req.sessionID);
-                                // Manually set cookie to ensure it's sent
-                                const cookieName = sessionConfig.name || 'connect.sid';
-                                res.cookie(cookieName, req.sessionID, {
-                                    httpOnly: true,
-                                    secure: process.env.VERCEL ? true : false,
-                                    sameSite: process.env.VERCEL ? 'none' : 'lax',
-                                    maxAge: 24 * 60 * 60 * 1000,
-                                    path: '/'
-                                });
-                                console.log('[Login] Cookie manually set:', cookieName);
+                                // Also set userId cookie for Vercel compatibility
+                                if (process.env.VERCEL) {
+                                    res.cookie('userId', newUser.id.toString(), {
+                                        httpOnly: true,
+                                        secure: true,
+                                        sameSite: 'none',
+                                        maxAge: 24 * 60 * 60 * 1000,
+                                        path: '/',
+                                        signed: true
+                                    });
+                                    console.log('[Login] UserId cookie set for Vercel:', newUser.id);
+                                }
                                 return res.json({ success: true, user: { id: newUser.id, email: newUser.email } });
                             });
                         });
@@ -900,16 +936,18 @@ app.post('/api/auth/login', (req, res) => {
                                 return res.status(500).json({ success: false, error: 'Session error' });
                             }
                             console.log('[Login] Session saved successfully, Session ID:', req.sessionID);
-                            // Manually set cookie to ensure it's sent
-                            const cookieName = sessionConfig.name || 'connect.sid';
-                            res.cookie(cookieName, req.sessionID, {
-                                httpOnly: true,
-                                secure: process.env.VERCEL ? true : false,
-                                sameSite: process.env.VERCEL ? 'none' : 'lax',
-                                maxAge: 24 * 60 * 60 * 1000,
-                                path: '/'
-                            });
-                            console.log('[Login] Cookie manually set:', cookieName);
+                            // Also set userId cookie for Vercel compatibility
+                            if (process.env.VERCEL) {
+                                res.cookie('userId', user.id.toString(), {
+                                    httpOnly: true,
+                                    secure: true,
+                                    sameSite: 'none',
+                                    maxAge: 24 * 60 * 60 * 1000,
+                                    path: '/',
+                                    signed: true
+                                });
+                                console.log('[Login] UserId cookie set for Vercel:', user.id);
+                            }
                             return res.json({ success: true, user: { id: user.id, email: user.email } });
                         });
                     } else {
@@ -963,16 +1001,18 @@ app.post('/api/auth/login', (req, res) => {
                 return res.status(500).json({ success: false, error: 'Session error' });
             }
             console.log('[Login] Session saved successfully, Session ID:', req.sessionID);
-            // Manually set cookie to ensure it's sent
-            const cookieName = sessionConfig.name || 'connect.sid';
-            res.cookie(cookieName, req.sessionID, {
-                httpOnly: true,
-                secure: process.env.VERCEL ? true : false,
-                sameSite: process.env.VERCEL ? 'none' : 'lax',
-                maxAge: 24 * 60 * 60 * 1000,
-                path: '/'
-            });
-            console.log('[Login] Cookie manually set:', cookieName);
+            // Also set userId cookie for Vercel compatibility
+            if (process.env.VERCEL) {
+                res.cookie('userId', user.id.toString(), {
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: 'none',
+                    maxAge: 24 * 60 * 60 * 1000,
+                    path: '/',
+                    signed: true
+                });
+                console.log('[Login] UserId cookie set for Vercel:', user.id);
+            }
             return res.json({ success: true, message: 'Login successful' });
         });
     });

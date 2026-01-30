@@ -48,19 +48,18 @@ const sessionConfig = {
     cookie: { 
         secure: process.env.VERCEL ? true : false, // HTTPS in Vercel
         httpOnly: true,
+        sameSite: process.env.VERCEL ? 'none' : 'lax', // Required for cross-origin in Vercel
         maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
 };
 
-if (process.env.VERCEL) {
-    // Use memory store in Vercel (sessions will be lost on restart, but works)
-    // For production, consider using Vercel KV or external Redis
-    sessionConfig.store = new (require('express-session').MemoryStore)();
-} else {
+if (!process.env.VERCEL) {
     // Use SQLite store locally
     const sessionDir = './';
     sessionConfig.store = new SQLiteStore({ db: 'sessions.db', dir: sessionDir });
 }
+// In Vercel, don't use a store - sessions will be stored in signed cookies
+// This works because cookies are sent with every request, so sessions persist across function invocations
 
 app.use(session(sessionConfig));
 

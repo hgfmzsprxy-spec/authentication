@@ -96,9 +96,9 @@ function getUserIdFromRequest(req) {
         return req.session.userId;
     }
     
-    // In Vercel, check signed userId cookie as fallback
+    // In Vercel, check userId cookie as fallback
     if (process.env.VERCEL) {
-        const userId = req.signedCookies?.userId || req.cookies?.userId;
+        const userId = req.cookies?.userId;
         if (userId) {
             // Restore session from cookie
             req.session = req.session || {};
@@ -946,14 +946,13 @@ app.post('/api/auth/login', (req, res) => {
                             // Also set userId cookie for Vercel compatibility
                             if (process.env.VERCEL) {
                                 try {
-                                    res.cookie('userId', user.id.toString(), {
-                                        httpOnly: true,
-                                        secure: true,
-                                        sameSite: 'none',
-                                        maxAge: 24 * 60 * 60 * 1000,
-                                        path: '/',
-                                        signed: true
-                                    });
+                                res.cookie('userId', user.id.toString(), {
+                                    httpOnly: true,
+                                    secure: true,
+                                    sameSite: 'none',
+                                    maxAge: 24 * 60 * 60 * 1000,
+                                    path: '/'
+                                });
                                     console.log('[Login] UserId cookie set for Vercel:', user.id);
                                 } catch (cookieErr) {
                                     console.error('[Login] Error setting cookie:', cookieErr);
@@ -984,14 +983,13 @@ app.post('/api/auth/login', (req, res) => {
                     // Also set userId cookie for Vercel compatibility
                     if (process.env.VERCEL) {
                         try {
-                            res.cookie('userId', user.id.toString(), {
-                                httpOnly: true,
-                                secure: true,
-                                sameSite: 'none',
-                                maxAge: 24 * 60 * 60 * 1000,
-                                path: '/',
-                                signed: true
-                            });
+                                res.cookie('userId', user.id.toString(), {
+                                    httpOnly: true,
+                                    secure: true,
+                                    sameSite: 'none',
+                                    maxAge: 24 * 60 * 60 * 1000,
+                                    path: '/'
+                                });
                             console.log('[Login] UserId cookie set for Vercel:', user.id);
                         } catch (cookieErr) {
                             console.error('[Login] Error setting cookie:', cookieErr);
@@ -1040,14 +1038,13 @@ app.post('/api/auth/login', (req, res) => {
             console.log('[Login] Session saved successfully, Session ID:', req.sessionID);
             // Also set userId cookie for Vercel compatibility
             if (process.env.VERCEL) {
-                res.cookie('userId', user.id.toString(), {
-                    httpOnly: true,
-                    secure: true,
-                    sameSite: 'none',
-                    maxAge: 24 * 60 * 60 * 1000,
-                    path: '/',
-                    signed: true
-                });
+                                res.cookie('userId', user.id.toString(), {
+                                    httpOnly: true,
+                                    secure: true,
+                                    sameSite: 'none',
+                                    maxAge: 24 * 60 * 60 * 1000,
+                                    path: '/'
+                                });
                 console.log('[Login] UserId cookie set for Vercel:', user.id);
             }
             return res.json({ success: true, message: 'Login successful' });

@@ -402,8 +402,8 @@
         });
     }
     
-    // Universal navigation highlighting
-    document.addEventListener('DOMContentLoaded', function() {
+    // Universal navigation highlighting - run after all scripts load
+    function highlightActiveNav() {
         const currentPath = window.location.pathname;
         
         // Remove w--current from all nav links
@@ -447,7 +447,17 @@
             activeLink.classList.add('w--current');
             activeLink.setAttribute('aria-current', 'page');
         }
-        
+    }
+    
+    // Run on DOMContentLoaded and also on window load (after all scripts)
+    document.addEventListener('DOMContentLoaded', highlightActiveNav);
+    window.addEventListener('load', function() {
+        // Small delay to ensure all scripts have finished
+        setTimeout(highlightActiveNav, 100);
+    });
+    
+    // Also run when page becomes visible (handles back/forward navigation)
+    document.addEventListener('DOMContentLoaded', function() {
         // Load user info
         if (typeof loadUserInfo === 'function') {
             loadUserInfo();

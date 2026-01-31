@@ -250,8 +250,8 @@
 <script src="js/webflow.33c9cbd5.185f4854ea36279a.js" type="text/javascript"></script>
 <script src="js/settings.js" type="text/javascript"></script>
 <script>
-    // Universal navigation highlighting
-    document.addEventListener('DOMContentLoaded', function() {
+    // Universal navigation highlighting - run after all scripts load
+    function highlightActiveNav() {
         const currentPath = window.location.pathname;
         
         // Remove w--current from all nav links
@@ -295,6 +295,13 @@
             activeLink.classList.add('w--current');
             activeLink.setAttribute('aria-current', 'page');
         }
+    }
+    
+    // Run on DOMContentLoaded and also on window load (after all scripts)
+    document.addEventListener('DOMContentLoaded', highlightActiveNav);
+    window.addEventListener('load', function() {
+        // Small delay to ensure all scripts have finished
+        setTimeout(highlightActiveNav, 100);
     });
 </script>
 <script src="js/nav-permissions.js"></script>

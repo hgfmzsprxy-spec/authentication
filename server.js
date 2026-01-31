@@ -792,6 +792,10 @@ app.use('/api', (req, res, next) => {
     if (req.path.startsWith('/auth')) {
         return next();
     }
+    // Allow unauthenticated license checks from client apps
+    if (req.path === '/licenses/check') {
+        return next();
+    }
     const userId = getUserIdFromRequest(req);
     if (!userId) {
         return res.status(401).json({ error: 'Unauthorized' });

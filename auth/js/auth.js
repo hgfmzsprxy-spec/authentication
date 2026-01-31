@@ -1319,6 +1319,24 @@ window.addEventListener('load', async () => {
     const appIdFromUrl = urlParams.get('app_id');
     if (appIdFromUrl) {
         currentAppId = appIdFromUrl;
+        
+        // Change Licenses nav link color to purple to indicate app filter
+        const licensesNav = document.querySelector('.nav-link.w--current');
+        if (licensesNav && licensesNav.textContent.includes('Licenses')) {
+            const purpleColor = '#763ff9';
+            licensesNav.style.setProperty('color', purpleColor, 'important');
+            
+            const navText = licensesNav.querySelector('div');
+            if (navText) {
+                navText.style.setProperty('color', purpleColor, 'important');
+            }
+            
+            const navIcon = licensesNav.querySelector('.nav-icon');
+            if (navIcon) {
+                // Purple filter approximation for #763ff9
+                navIcon.style.filter = 'brightness(0) saturate(100%) invert(22%) sepia(93%) saturate(4681%) hue-rotate(264deg) brightness(98%) contrast(102%)';
+            }
+        }
     }
     
     await loadApplications();

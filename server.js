@@ -113,24 +113,27 @@ function getUserIdFromRequest(req) {
     }
     
     // In Vercel, check userId cookie as fallback
-    // BUT: Only restore if session cookie exists AND session exists but doesn't have userId
-    // This means session was created but data was lost (e.g., cold start)
-    // If session doesn't exist OR session exists but was explicitly destroyed (no userId), don't restore
+    // Restore userId from cookie if:
+    // 1. userId cookie exists
+    // 2. session cookie exists (means session is active, even if new/empty)
+    // This handles cases where session was created but userId was lost (cold start, etc.)
     if (process.env.VERCEL) {
         const userId = req.cookies?.userId;
         const sessionCookie = req.cookies?.['auth.sid'] || req.signedCookies?.['auth.sid'];
         
-        // Only restore if:
-        // 1. userId cookie exists
-        // 2. session cookie exists (means session is active)
-        // 3. session exists but doesn't have userId (means session was created but data was lost)
-        if (userId && sessionCookie && req.session && !req.session.userId) {
-            // Session exists but doesn't have userId - restore from cookie
+        // If userId cookie exists and session cookie exists, restore userId to session
+        // This means user is logged in (has userId cookie) and has active session
+        if (userId && sessionCookie) {
+            // Ensure session exists
+            if (!req.session) {
+                req.session = {};
+            }
+            // Restore userId to session
             req.session.userId = parseInt(userId);
             return parseInt(userId);
         }
-        // If session doesn't exist or session exists but was destroyed (no userId and no session cookie),
-        // don't restore - user might have logged out
+        // If userId cookie doesn't exist or session cookie doesn't exist,
+        // user is not logged in (logged out or never logged in)
     }
     
     return null;

@@ -264,8 +264,9 @@
                     if (data.success) {
                         showSuccess('Password set successfully! Redirecting...');
                         setTimeout(() => {
-                            window.location.href = 'application.html';
-                        }, 1500);
+                            // Use replace to avoid back button issues and ensure fresh page load
+                            window.location.replace('application.html');
+                        }, 1000);
                     } else {
                         showError(data.error || 'Failed to set password');
                     }
@@ -289,8 +290,9 @@
                     if (data.success) {
                         showSuccess('Login successful! Redirecting...');
                         setTimeout(() => {
-                            window.location.href = 'application.html';
-                        }, 1500);
+                            // Use replace to avoid back button issues and ensure fresh page load
+                            window.location.replace('application.html');
+                        }, 1000);
                     } else {
                         showError(data.error || 'Invalid email or password');
                     }
@@ -322,7 +324,7 @@
                 });
                 const data = await response.json();
                 if (data.loggedIn) {
-                    window.location.href = 'application.html';
+                    window.location.replace('application.html');
                 }
             } catch (error) {
                 console.error('Error checking auth:', error);

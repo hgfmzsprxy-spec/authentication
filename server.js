@@ -9,7 +9,7 @@ const https = require('https');
 const http = require('http');
 const session = require('express-session');
 
-// Only import SQLiteStore locally (it requires sqlite3 which doesn't work in Vercel)
+
 let SQLiteStore = null;
 if (!process.env.VERCEL) {
     SQLiteStore = require('connect-sqlite3')(session);

@@ -3117,17 +3117,23 @@ app.delete('/api/licenses/:license_key', (req, res) => {
                     return res.status(404).json({ error: 'License not found' });
                 }
                 
-                db.run('DELETE FROM licenses WHERE license_key = ?', [license_key], function(err, result) {
-                    if (err) {
-                        console.error('[DELETE /api/licenses/:license_key] Admin delete error:', err);
-                        return res.status(500).json({ error: err.message });
+                db.run('DELETE FROM license_usage WHERE license_key = ?', [license_key], function(usageErr) {
+                    if (usageErr) {
+                        console.error('[DELETE /api/licenses/:license_key] Admin delete usage error:', usageErr);
+                        return res.status(500).json({ error: usageErr.message });
                     }
-                    const changes = (result && result.changes) || (this && this.changes) || 0;
-                    if (changes === 0) {
-                        return res.status(404).json({ error: 'License not found' });
-                    }
-                    logAdminActivity(req.session.userId, 'license_delete', `Deleted license`, license_key, info?.app_id);
-                    res.json({ success: true, message: 'License deleted successfully' });
+                    db.run('DELETE FROM licenses WHERE license_key = ?', [license_key], function(err, result) {
+                        if (err) {
+                            console.error('[DELETE /api/licenses/:license_key] Admin delete error:', err);
+                            return res.status(500).json({ error: err.message });
+                        }
+                        const changes = (result && result.changes) || (this && this.changes) || 0;
+                        if (changes === 0) {
+                            return res.status(404).json({ error: 'License not found' });
+                        }
+                        logAdminActivity(req.session.userId, 'license_delete', `Deleted license`, license_key, info?.app_id);
+                        res.json({ success: true, message: 'License deleted successfully' });
+                    });
                 });
             });
         } else {
@@ -3150,25 +3156,31 @@ app.delete('/api/licenses/:license_key', (req, res) => {
                         return res.status(404).json({ error: 'License not found' });
                     }
                     
-                    db.run('DELETE FROM licenses WHERE license_key = ? AND created_by = ?', [license_key, req.session.userId], function(err, result) {
-                        if (err) {
-                            console.error('[DELETE /api/licenses/:license_key] User delete error:', err);
-                            return res.status(500).json({ error: err.message });
+                    db.run('DELETE FROM license_usage WHERE license_key = ?', [license_key], function(usageErr) {
+                        if (usageErr) {
+                            console.error('[DELETE /api/licenses/:license_key] User delete usage error:', usageErr);
+                            return res.status(500).json({ error: usageErr.message });
                         }
-                        const changes = (result && result.changes) || (this && this.changes) || 0;
-                        if (changes === 0) {
-                            return res.status(404).json({ error: 'License not found' });
-                        }
-                        logAdminActivity(req.session.userId, 'license_delete', `Deleted license`, license_key, info?.app_id);
-                        setImmediate(() => {
-                            sendAccountWebhook(req.session.userId, {
-                                title: 'License Log',
-                                action: 'Delete License',
-                                license_key: license_key,
-                                app_name: info?.app_name || 'N/A'
+                        db.run('DELETE FROM licenses WHERE license_key = ? AND created_by = ?', [license_key, req.session.userId], function(err, result) {
+                            if (err) {
+                                console.error('[DELETE /api/licenses/:license_key] User delete error:', err);
+                                return res.status(500).json({ error: err.message });
+                            }
+                            const changes = (result && result.changes) || (this && this.changes) || 0;
+                            if (changes === 0) {
+                                return res.status(404).json({ error: 'License not found' });
+                            }
+                            logAdminActivity(req.session.userId, 'license_delete', `Deleted license`, license_key, info?.app_id);
+                            setImmediate(() => {
+                                sendAccountWebhook(req.session.userId, {
+                                    title: 'License Log',
+                                    action: 'Delete License',
+                                    license_key: license_key,
+                                    app_name: info?.app_name || 'N/A'
+                                });
                             });
+                            res.json({ success: true, message: 'License deleted successfully' });
                         });
-                        res.json({ success: true, message: 'License deleted successfully' });
                     });
                 });
             }); // Close getUserPermissions callback
@@ -5071,4 +5083,3 @@ if (!process.env.VERCEL) {
 
 // Export app for Vercel serverless functions
 module.exports = app;
-

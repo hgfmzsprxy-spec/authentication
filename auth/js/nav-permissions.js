@@ -155,12 +155,21 @@
         }
       }
 
+      // If user doesn't have view permission, show overlay instead of redirecting
       if (path.includes('protection.html') && !permissions?.security_logs?.view) {
-        redirectNoAccess('Access denied: Security Logs.');
+        const content = document.querySelector('.dashboard-content');
+        if (content) {
+          lockElement(content, 'No Permissions, Lack of administrator Consent.');
+          content.querySelectorAll('input, select, button, textarea, a').forEach(disableElement);
+        }
         return;
       }
       if (path.includes('messages.html') && !permissions?.custom_messages?.view) {
-        redirectNoAccess('Access denied: Custom Messages.');
+        const content = document.querySelector('.dashboard-content');
+        if (content) {
+          lockElement(content, 'No Permissions, Lack of administrator Consent.');
+          content.querySelectorAll('input, select, button, textarea, a').forEach(disableElement);
+        }
         return;
       }
       if ((path.includes('index.html') || path.endsWith('/licenses')) && !permissions?.licenses?.view) {
@@ -196,9 +205,18 @@
   function disableElement(element) {
     if (!element) return;
     element.classList.add('permission-disabled');
-    element.setAttribute('disabled', 'disabled');
+    // For form elements, use disabled attribute
+    if (element.tagName === 'INPUT' || element.tagName === 'SELECT' || element.tagName === 'BUTTON' || element.tagName === 'TEXTAREA') {
+      element.setAttribute('disabled', 'disabled');
+    }
     element.setAttribute('aria-disabled', 'true');
     element.tabIndex = -1;
+    // For links, prevent navigation
+    if (element.tagName === 'A') {
+      element.style.pointerEvents = 'none';
+      element.style.opacity = '0.5';
+      element.href = 'javascript:void(0)';
+    }
   }
 })();
 

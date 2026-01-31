@@ -11,7 +11,7 @@
   function applyNavPermissions(permissions) {
     const securityLink = document.querySelector('a[href="protection.html"]');
     const messagesLink = document.querySelector('a[href="messages.html"]');
-    const licensesLink = document.querySelector('a[href="index.html"], a[href="/licenses"]');
+  const licensesLink = document.querySelector('a[href="/"], a[href="/licenses"]');
     const resellersLink = document.querySelector('a[href="/resellers"]');
     const protectionGroup = document.querySelector('.nav-dropdown');
 

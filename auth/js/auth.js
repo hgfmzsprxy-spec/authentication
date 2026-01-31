@@ -114,7 +114,7 @@ function applyPermissionsToUI() {
     // Hide/show menu items based on permissions
     const menuItems = {
         'application': document.querySelector('a[href="application.html"]'),
-        'licenses': document.querySelector('a[href="index.html"], a[href="/licenses"]'),
+        'licenses': document.querySelector('a[href="/"], a[href="/licenses"]'),
         'protection': document.querySelector('.nav-dropdown'),
         'settings': document.querySelector('a[href="settings.html"]'),
         'admin': document.querySelector('a[href="admin.html"]')

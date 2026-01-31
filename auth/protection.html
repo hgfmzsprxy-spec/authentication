@@ -482,8 +482,16 @@
                         const userPermissions = data.permissions || {};
                         
                         // Check if user can edit security logs
+                        if (userPermissions['security_logs']?.view && !userPermissions['security_logs']?.edit) {
+                            // Add overlay to the card
+                            const card = document.querySelector('.table-module');
+                            if (card) {
+                                lockElement(card, 'No Permissions, Lack of administrator Consent.');
+                                card.querySelectorAll('input, select, button, textarea').forEach(disableElement);
+                            }
+                        }
+                        // Also disable elements if no edit permission (even if no view)
                         if (!userPermissions['security_logs']?.edit) {
-                            // Disable checkboxes
                             const checkboxes = document.querySelectorAll('#protection-settings-form input[type="checkbox"]');
                             checkboxes.forEach(cb => cb.disabled = true);
                             const applyBtn = document.getElementById('apply-settings-btn');
@@ -532,6 +540,31 @@
                         localStorage.clear();
                         window.location.replace('login.html?' + Date.now());
                     }
+                }
+                
+                // Helper function to lock element with overlay
+                function lockElement(element, message) {
+                    if (!element) return;
+                    element.classList.add('permission-locked');
+                    if (!element.querySelector('.permission-overlay')) {
+                        const overlay = document.createElement('div');
+                        overlay.className = 'permission-overlay';
+                        overlay.innerHTML = `
+                            <div class="lock-icon"></div>
+                            <div>${message || 'No Permissions, Lack of administrator Consent.'}</div>
+                        `;
+                        element.appendChild(overlay);
+                    }
+                }
+                
+                function disableElement(element) {
+                    if (!element) return;
+                    element.classList.add('permission-disabled');
+                    if (element.tagName === 'INPUT' || element.tagName === 'SELECT' || element.tagName === 'BUTTON' || element.tagName === 'TEXTAREA') {
+                        element.setAttribute('disabled', 'disabled');
+                    }
+                    element.setAttribute('aria-disabled', 'true');
+                    element.tabIndex = -1;
                 }
                 
                 // Initialize

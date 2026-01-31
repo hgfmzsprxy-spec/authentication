@@ -140,19 +140,12 @@
 
       const path = window.location.pathname;
 
+      // Apply permission locks for edit restrictions (user has view but not edit)
       if (path.includes('protection.html') && permissions?.security_logs?.view && !permissions?.security_logs?.edit) {
-        const card = document.querySelector('.table-module');
-        if (card) {
-          lockElement(card, 'No Permissions, Lack of administrator Consent.');
-          card.querySelectorAll('input, select, button, textarea').forEach(disableElement);
-        }
+        applyEditRestriction('protection');
       }
       if (path.includes('messages.html') && permissions?.custom_messages?.view && !permissions?.custom_messages?.edit) {
-        const card = document.querySelector('.table-module');
-        if (card) {
-          lockElement(card, 'No Permissions, Lack of administrator Consent.');
-          card.querySelectorAll('input, select, button, textarea').forEach(disableElement);
-        }
+        applyEditRestriction('messages');
       }
 
       // If user doesn't have view permission, show overlay instead of redirecting
@@ -185,8 +178,34 @@
     }
   }
 
+  // Function to apply edit restriction overlay
+  function applyEditRestriction(pageType) {
+    const card = document.querySelector('.table-module');
+    if (card) {
+      lockElement(card, 'No Permissions, Lack of administrator Consent.');
+      card.querySelectorAll('input, select, button, textarea').forEach(disableElement);
+    } else {
+      // Retry after a short delay if element not found
+      setTimeout(() => {
+        const retryCard = document.querySelector('.table-module');
+        if (retryCard) {
+          lockElement(retryCard, 'No Permissions, Lack of administrator Consent.');
+          retryCard.querySelectorAll('input, select, button, textarea').forEach(disableElement);
+        }
+      }, 500);
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', loadPermissions);
   document.addEventListener('DOMContentLoaded', showDeniedMessage);
+  
+  // Also run on window load to ensure elements are ready
+  window.addEventListener('load', function() {
+    // Re-check permissions after all scripts load
+    setTimeout(() => {
+      loadPermissions();
+    }, 100);
+  });
 
   function lockElement(element, message) {
     if (!element) return;

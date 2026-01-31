@@ -155,7 +155,7 @@
                         <img src="images/icon-home.svg" loading="lazy" alt="" class="nav-icon">
                         <div>Dashboard</div>
                     </a>
-                    <a href="application.html" aria-current="page" class="nav-link w-inline-block w--current">
+                    <a href="application.html" class="nav-link w-inline-block">
                         <img src="images/icon-laptop.svg" loading="lazy" alt="" class="nav-icon">
                         <div>Application</div>
                     </a>
@@ -457,17 +457,52 @@
         }
     }
     
-    // Auto-expand if on protection or messages page
-    if (window.location.pathname.includes('protection.html') || window.location.pathname.includes('messages.html')) {
-        document.addEventListener('DOMContentLoaded', function() {
+    // Universal navigation highlighting
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentPath = window.location.pathname;
+        
+        // Remove w--current from all nav links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('w--current');
+            link.removeAttribute('aria-current');
+        });
+        
+        // Determine which nav link should be active based on current path
+        let activeLink = null;
+        
+        if (currentPath === '/' || currentPath === '/index' || currentPath === '/index.html' || currentPath.endsWith('/index') || currentPath.endsWith('/index.html')) {
+            // Licenses page
+            activeLink = document.querySelector('a[href="/"], a[href="index.html"]');
+        } else if (currentPath.includes('dashboard') || currentPath === '/dashboard' || currentPath === '/dashboard.html') {
+            // Dashboard page
+            activeLink = document.querySelector('a[href="dashboard.html"], a[href="/dashboard"]');
+        } else if (currentPath.includes('application') || currentPath === '/application' || currentPath === '/application.html') {
+            // Application page
+            activeLink = document.querySelector('a[href="application.html"], a[href="/application"]');
+        } else if (currentPath.includes('settings') || currentPath === '/settings' || currentPath === '/settings.html') {
+            // Settings page
+            activeLink = document.querySelector('a[href="settings.html"], a[href="/settings"]');
+        } else if (currentPath.includes('admin') || currentPath === '/admin' || currentPath === '/admin.html') {
+            // Administrator page
+            activeLink = document.querySelector('a[href="admin.html"], a[href="/admin"]');
+        }
+        
+        // Add w--current to the active link
+        if (activeLink) {
+            activeLink.classList.add('w--current');
+            activeLink.setAttribute('aria-current', 'page');
+        }
+        
+        // Auto-expand if on protection or messages page
+        if (currentPath.includes('protection') || currentPath.includes('messages')) {
             const submenu = document.getElementById('protection-submenu');
             const arrow = document.querySelector('.nav-dropdown .dropdown-arrow');
             if (submenu) {
                 submenu.style.display = 'block';
                 if (arrow) arrow.style.transform = 'rotate(180deg)';
             }
-        });
-    }
+        }
+    });
 </script><script src="js/nav-permissions.js"></script></body></html>
 
 

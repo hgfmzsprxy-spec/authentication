@@ -509,12 +509,30 @@
                     });
                     
                     const data = await response.json();
+                    
+                    // Clear all cookies manually (fallback)
+                    document.cookie.split(";").forEach(function(c) { 
+                        document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+                    });
+                    
+                    // Clear sessionStorage and localStorage
+                    sessionStorage.clear();
+                    localStorage.clear();
+                    
                     if (data.success) {
-                        window.location.href = 'login.html';
+                        window.location.replace('login.html?' + Date.now());
+                    } else {
+                        window.location.replace('login.html?' + Date.now());
                     }
                 } catch (error) {
                     console.error('Error logging out:', error);
-                    window.location.href = 'login.html';
+                    // Clear cookies and storage even on error
+                    document.cookie.split(";").forEach(function(c) { 
+                        document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+                    });
+                    sessionStorage.clear();
+                    localStorage.clear();
+                    window.location.replace('login.html?' + Date.now());
                 }
             }
             
@@ -592,6 +610,55 @@
                         }, 5000);
                     });
                 });
+            });
+            
+            function toggleProtectionMenu(event) {
+                event.preventDefault();
+                const submenu = document.getElementById('protection-submenu');
+                const arrow = event.currentTarget.querySelector('.dropdown-arrow');
+                if (submenu.style.display === 'none') {
+                    submenu.style.display = 'block';
+                    arrow.style.transform = 'rotate(180deg)';
+                } else {
+                    submenu.style.display = 'none';
+                    arrow.style.transform = 'rotate(0deg)';
+                }
+            }
+            
+            // Universal navigation highlighting
+            document.addEventListener('DOMContentLoaded', function() {
+                const currentPath = window.location.pathname;
+                
+                // Remove w--current from all nav links
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.remove('w--current');
+                    link.removeAttribute('aria-current');
+                });
+                
+                // Auto-expand protection submenu if on protection or messages page
+                if (currentPath.includes('protection') || currentPath.includes('messages')) {
+                    const submenu = document.getElementById('protection-submenu');
+                    const arrow = document.querySelector('.nav-dropdown .dropdown-arrow');
+                    if (submenu) {
+                        submenu.style.display = 'block';
+                        if (arrow) arrow.style.transform = 'rotate(180deg)';
+                    }
+                    
+                    // Highlight the appropriate submenu link
+                    if (currentPath.includes('protection')) {
+                        const protectionLink = document.querySelector('a[href="protection.html"], a[href="/protection"]');
+                        if (protectionLink) {
+                            protectionLink.classList.add('w--current');
+                            protectionLink.setAttribute('aria-current', 'page');
+                        }
+                    } else if (currentPath.includes('messages')) {
+                        const messagesLink = document.querySelector('a[href="messages.html"], a[href="/messages"]');
+                        if (messagesLink) {
+                            messagesLink.classList.add('w--current');
+                            messagesLink.setAttribute('aria-current', 'page');
+                        }
+                    }
+                }
             });
         </script><script src="js/nav-permissions.js"></script></body>
 </html>

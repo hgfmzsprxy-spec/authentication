@@ -113,14 +113,24 @@ function getUserIdFromRequest(req) {
     }
     
     // In Vercel, check userId cookie as fallback
+    // BUT: Only restore if session cookie exists AND session exists but doesn't have userId
+    // This means session was created but data was lost (e.g., cold start)
+    // If session doesn't exist OR session exists but was explicitly destroyed (no userId), don't restore
     if (process.env.VERCEL) {
         const userId = req.cookies?.userId;
-        if (userId) {
-            // Restore session from cookie
-            req.session = req.session || {};
+        const sessionCookie = req.cookies?.['auth.sid'] || req.signedCookies?.['auth.sid'];
+        
+        // Only restore if:
+        // 1. userId cookie exists
+        // 2. session cookie exists (means session is active)
+        // 3. session exists but doesn't have userId (means session was created but data was lost)
+        if (userId && sessionCookie && req.session && !req.session.userId) {
+            // Session exists but doesn't have userId - restore from cookie
             req.session.userId = parseInt(userId);
             return parseInt(userId);
         }
+        // If session doesn't exist or session exists but was destroyed (no userId and no session cookie),
+        // don't restore - user might have logged out
     }
     
     return null;
@@ -3534,10 +3544,32 @@ app.post('/api/account/delete', (req, res) => {
 
 // Logout
 app.post('/api/auth/logout', (req, res) => {
+    // Clear userId cookie (used in Vercel)
+    if (process.env.VERCEL) {
+        res.clearCookie('userId', {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+            path: '/'
+        });
+    }
+    
+    // Destroy session
     req.session.destroy((err) => {
         if (err) {
+            console.error('[Logout] Error destroying session:', err);
             return res.status(500).json({ success: false, error: 'Failed to logout' });
         }
+        
+        // Also clear the session cookie explicitly
+        res.clearCookie('auth.sid', {
+            httpOnly: true,
+            secure: process.env.VERCEL ? true : false,
+            sameSite: process.env.VERCEL ? 'none' : 'lax',
+            path: '/'
+        });
+        
+        console.log('[Logout] Session destroyed and cookies cleared');
         return res.json({ success: true, message: 'Logged out successfully' });
     });
 });

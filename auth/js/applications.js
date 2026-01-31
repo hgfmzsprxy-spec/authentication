@@ -107,12 +107,30 @@ async function logout() {
         });
         
         const data = await response.json();
+        
+        // Clear all cookies manually (fallback)
+        document.cookie.split(";").forEach(function(c) { 
+            document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+        });
+        
+        // Clear sessionStorage and localStorage
+        sessionStorage.clear();
+        localStorage.clear();
+        
         if (data.success) {
-            window.location.href = 'login.html';
+            window.location.replace('login.html?' + Date.now());
+        } else {
+            window.location.replace('login.html?' + Date.now());
         }
     } catch (error) {
         console.error('Error logging out:', error);
-        window.location.href = 'login.html';
+        // Clear cookies and storage even on error
+        document.cookie.split(";").forEach(function(c) { 
+            document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+        });
+        sessionStorage.clear();
+        localStorage.clear();
+        window.location.replace('login.html?' + Date.now());
     }
 }
 

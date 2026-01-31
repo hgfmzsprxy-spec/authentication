@@ -1154,25 +1154,35 @@
             link.removeAttribute('aria-current');
         });
         
-        // Determine which nav link should be active based on current path
-        let activeLink = null;
+        // Normalize current path (remove leading/trailing slashes, handle .html)
+        const normalizePath = (path) => {
+            let normalized = path.replace(/^\/+|\/+$/g, ''); // Remove leading/trailing slashes
+            if (normalized === '' || normalized === 'index' || normalized === 'index.html') {
+                return '/';
+            }
+            normalized = normalized.replace(/\.html$/, ''); // Remove .html extension
+            return normalized;
+        };
         
-        if (currentPath === '/' || currentPath === '/index' || currentPath === '/index.html' || currentPath.endsWith('/index') || currentPath.endsWith('/index.html')) {
-            // Licenses page
-            activeLink = document.querySelector('a[href="/"], a[href="index.html"]');
-        } else if (currentPath.includes('dashboard') || currentPath === '/dashboard' || currentPath === '/dashboard.html') {
-            // Dashboard page
-            activeLink = document.querySelector('a[href="dashboard.html"], a[href="/dashboard"]');
-        } else if (currentPath.includes('application') || currentPath === '/application' || currentPath === '/application.html') {
-            // Application page
-            activeLink = document.querySelector('a[href="application.html"], a[href="/application"]');
-        } else if (currentPath.includes('settings') || currentPath === '/settings' || currentPath === '/settings.html') {
-            // Settings page
-            activeLink = document.querySelector('a[href="settings.html"], a[href="/settings"]');
-        } else if (currentPath.includes('admin') || currentPath === '/admin' || currentPath === '/admin.html') {
-            // Administrator page
-            activeLink = document.querySelector('a[href="admin.html"], a[href="/admin"]');
-        }
+        const currentNormalized = normalizePath(currentPath);
+        
+        // Find active link by comparing href with current path
+        let activeLink = null;
+        document.querySelectorAll('.nav-link').forEach(link => {
+            const href = link.getAttribute('href');
+            if (!href) return;
+            
+            const hrefNormalized = normalizePath(href);
+            
+            // Special case for root/index
+            if (currentNormalized === '/' && (hrefNormalized === '/' || href === '/' || href === 'index.html' || href === '/index.html')) {
+                activeLink = link;
+            }
+            // Match other pages
+            else if (currentNormalized !== '/' && hrefNormalized === currentNormalized) {
+                activeLink = link;
+            }
+        });
         
         // Add w--current to the active link
         if (activeLink) {

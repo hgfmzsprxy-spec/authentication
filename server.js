@@ -2371,35 +2371,41 @@ app.post('/api/protection/settings', (req, res) => {
     
     console.log('[Protection Settings] Updating settings:', updates);
     
-    // Use INSERT OR REPLACE to update/create settings with 'global' app_id
-    const stmt = db.prepare('INSERT OR REPLACE INTO protection_settings (user_id, app_id, setting_key, setting_value, updated_at) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)');
-    
-    let errorOccurred = false;
-    updates.forEach(({ key, value }) => {
-        stmt.run(req.session.userId, 'global', key, value, (err) => {
-            if (err) {
-                console.error(`[Protection Settings] Error saving ${key}:`, err);
-                errorOccurred = true;
-            }
+    // Use Promise-based approach to ensure all updates complete before responding
+    const updatePromises = updates.map(({ key, value }) => {
+        return new Promise((resolve, reject) => {
+            db.run(
+                'INSERT OR REPLACE INTO protection_settings (user_id, app_id, setting_key, setting_value, updated_at) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)',
+                [req.session.userId, 'global', key, value],
+                (err) => {
+                    if (err) {
+                        console.error(`[Protection Settings] Error saving ${key}:`, err);
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
+                }
+            );
         });
     });
     
-    stmt.finalize((err) => {
-        if (err || errorOccurred) {
-            console.error('[Protection Settings] Error finalizing statement:', err);
-            return res.status(500).json({ success: false, error: err ? err.message : 'Database error occurred' });
-        }
-        
-        console.log('[Protection Settings] Settings saved successfully');
-        setImmediate(() => {
-            sendAccountWebhook(req.session.userId, {
-                title: 'Security Log',
-                action: 'Update Protection Settings',
-                details: 'Global protection settings updated'
+    // Wait for all updates to complete
+    Promise.all(updatePromises)
+        .then(() => {
+            console.log('[Protection Settings] Settings saved successfully');
+            setImmediate(() => {
+                sendAccountWebhook(req.session.userId, {
+                    title: 'Security Log',
+                    action: 'Update Protection Settings',
+                    details: 'Global protection settings updated'
+                });
             });
+            res.json({ success: true, message: 'Settings saved successfully for all applications' });
+        })
+        .catch((err) => {
+            console.error('[Protection Settings] Error saving settings:', err);
+            return res.status(500).json({ success: false, error: err.message || 'Database error occurred' });
         });
-        res.json({ success: true, message: 'Settings saved successfully for all applications' });
-    });
     });
 });
 
@@ -3494,28 +3500,41 @@ app.post('/api/messages', (req, res) => {
         return res.status(400).json({ success: false, error: 'No valid messages provided' });
     }
     
-    // Use INSERT OR REPLACE to update/create messages with 'global' app_id
-    const stmt = db.prepare('INSERT OR REPLACE INTO custom_messages (user_id, app_id, message_key, message_value, updated_at) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)');
-    
-    updates.forEach(({ key, value }) => {
-        stmt.run(req.session.userId, 'global', key, value);
-    });
-    
-    stmt.finalize((err) => {
-        if (err) {
-            console.error('Error saving custom messages:', err);
-            return res.status(500).json({ success: false, error: err.message });
-        }
-        
-        setImmediate(() => {
-            sendAccountWebhook(req.session.userId, {
-                title: 'Custom Messages Log',
-                action: 'Update Custom Messages',
-                details: 'Global custom messages updated'
-            });
+    // Use Promise-based approach to ensure all updates complete before responding
+    const updatePromises = updates.map(({ key, value }) => {
+        return new Promise((resolve, reject) => {
+            db.run(
+                'INSERT OR REPLACE INTO custom_messages (user_id, app_id, message_key, message_value, updated_at) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)',
+                [req.session.userId, 'global', key, value],
+                (err) => {
+                    if (err) {
+                        console.error(`[Custom Messages] Error saving ${key}:`, err);
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
+                }
+            );
         });
-        res.json({ success: true, message: 'Messages saved successfully' });
     });
+    
+    // Wait for all updates to complete
+    Promise.all(updatePromises)
+        .then(() => {
+            console.log('[Custom Messages] Messages saved successfully');
+            setImmediate(() => {
+                sendAccountWebhook(req.session.userId, {
+                    title: 'Custom Messages Log',
+                    action: 'Update Custom Messages',
+                    details: 'Global custom messages updated'
+                });
+            });
+            res.json({ success: true, message: 'Messages saved successfully' });
+        })
+        .catch((err) => {
+            console.error('[Custom Messages] Error saving messages:', err);
+            return res.status(500).json({ success: false, error: err.message || 'Database error occurred' });
+        });
     }); // Close getUserPermissions callback
 });
 

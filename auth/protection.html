@@ -613,6 +613,42 @@
                     link.removeAttribute('aria-current');
                 });
                 
+                // Normalize current path (remove leading/trailing slashes, handle .html)
+                const normalizePath = (path) => {
+                    let normalized = path.replace(/^\/+|\/+$/g, ''); // Remove leading/trailing slashes
+                    if (normalized === '' || normalized === 'index' || normalized === 'index.html') {
+                        return '/';
+                    }
+                    normalized = normalized.replace(/\.html$/, ''); // Remove .html extension
+                    return normalized;
+                };
+                
+                const currentNormalized = normalizePath(currentPath);
+                
+                // Find active link by comparing href with current path
+                let activeLink = null;
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (!href) return;
+                    
+                    const hrefNormalized = normalizePath(href);
+                    
+                    // Special case for root/index
+                    if (currentNormalized === '/' && (hrefNormalized === '/' || href === '/' || href === 'index.html' || href === '/index.html')) {
+                        activeLink = link;
+                    }
+                    // Match other pages
+                    else if (currentNormalized !== '/' && hrefNormalized === currentNormalized) {
+                        activeLink = link;
+                    }
+                });
+                
+                // Add w--current to the active link
+                if (activeLink) {
+                    activeLink.classList.add('w--current');
+                    activeLink.setAttribute('aria-current', 'page');
+                }
+                
                 // Auto-expand protection submenu if on protection or messages page
                 if (currentPath.includes('protection') || currentPath.includes('messages')) {
                     const submenu = document.getElementById('protection-submenu');

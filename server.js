@@ -3903,13 +3903,21 @@ app.post('/api/admin/users/:userId/warn', (req, res) => {
 
 // Confirm warn (user confirms they've seen the warning)
 app.post('/api/auth/confirm-warn', (req, res) => {
-    if (!req.session || !req.session.userId) {
+    // Use getUserIdFromRequest to restore userId from cookie in Vercel
+    const userId = getUserIdFromRequest(req);
+    if (!userId) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
+    
+    // Ensure session is populated
+    if (!req.session) {
+        req.session = {};
+    }
+    req.session.userId = userId;
 
     db.run(
         'UPDATE users SET warn_confirmed = 1, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
-        [req.session.userId],
+        [userId],
         function(updateErr, result) {
             if (updateErr) {
                 console.error('[POST /api/auth/confirm-warn] Database error:', updateErr);

@@ -3,6 +3,7 @@ const isVercel = process.env.VERCEL;
 
 let db;
 
+
 if (isVercel) {
     // Use LibSQL in Vercel (no native modules)
     const { createClient } = require('@libsql/client');

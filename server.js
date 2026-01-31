@@ -1404,14 +1404,16 @@ app.post('/api/licenses/check', (req, res) => {
                             ipv4: ipv4 || 'N/A',
                             login_date: login_date || new Date().toISOString(),
                             screenshot: screenshot || '',
-                            reason: bannedMsg
+                            reason: bannedMsg,
+                            expires_at: license.expires_at || null
                         };
                         setImmediate(() => sendDiscordWebhook(license.webhook_url, webhookData, ownerUserId));
                     }
                     
                     return res.json({ 
                         success: false,
-                        reason: bannedMsg
+                        reason: bannedMsg,
+                        expires_at: license.expires_at || null
                     });
                 });
                 return;
@@ -1431,14 +1433,16 @@ app.post('/api/licenses/check', (req, res) => {
                             ipv4: ipv4 || 'N/A',
                             login_date: login_date || new Date().toISOString(),
                             screenshot: screenshot || '',
-                            reason: pausedMsg
+                            reason: pausedMsg,
+                            expires_at: license.expires_at || null
                         };
                         setImmediate(() => sendDiscordWebhook(license.webhook_url, webhookData, ownerUserId));
                     }
                     
                     return res.json({ 
                         success: false,
-                        reason: pausedMsg
+                        reason: pausedMsg,
+                        expires_at: license.expires_at || null
                     });
                 });
                 return;
@@ -1458,14 +1462,16 @@ app.post('/api/licenses/check', (req, res) => {
                             ipv4: ipv4 || 'N/A',
                             login_date: login_date || new Date().toISOString(),
                             screenshot: screenshot || '',
-                            reason: inactiveMsg
+                            reason: inactiveMsg,
+                            expires_at: license.expires_at || null
                         };
                         setImmediate(() => sendDiscordWebhook(license.webhook_url, webhookData, ownerUserId));
                     }
                     
                     return res.json({ 
                         success: false,
-                        reason: inactiveMsg
+                        reason: inactiveMsg,
+                        expires_at: license.expires_at || null
                     });
                 });
                 return;
@@ -1553,14 +1559,16 @@ app.post('/api/licenses/check', (req, res) => {
                                     ipv4: ipv4 || 'N/A',
                                     login_date: login_date || new Date().toISOString(),
                                     screenshot: screenshot || '',
-                                    reason: hwidMismatchMsg
+                                    reason: hwidMismatchMsg,
+                                    expires_at: license.expires_at || null
                                 };
                                 setImmediate(() => sendDiscordWebhook(license.webhook_url, webhookData, ownerUserId));
                             }
                             
                             return res.json({ 
                                 success: false,
-                                reason: hwidMismatchMsg
+                                reason: hwidMismatchMsg,
+                                expires_at: license.expires_at || null
                             });
                         });
                         return;

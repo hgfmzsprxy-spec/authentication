@@ -12,6 +12,13 @@ if (isVercel) {
     // You can also use Turso cloud database by setting LIBSQL_URL and LIBSQL_AUTH_TOKEN
     const libsqlUrl = process.env.LIBSQL_URL || 'file:/tmp/auth.db';
     const libsqlAuthToken = process.env.LIBSQL_AUTH_TOKEN;
+
+    if (!process.env.LIBSQL_URL) {
+        console.warn('[DB] LIBSQL_URL is not set; falling back to local file in /tmp');
+    } else {
+        console.log(`[DB] LIBSQL_URL set: ${libsqlUrl.replace(/:\/\/.*@/, '://***@')}`);
+    }
+    console.log(`[DB] LIBSQL_AUTH_TOKEN set: ${libsqlAuthToken ? 'yes' : 'no'}`);
     
     const client = createClient({
         url: libsqlUrl,
@@ -44,6 +51,7 @@ if (isVercel) {
                         });
                     }
                 } catch (err) {
+                    console.error('[DB] LibSQL run error:', err.message);
                     if (callback) callback(err);
                 }
             })();
@@ -77,6 +85,7 @@ if (isVercel) {
                     
                     if (callback) callback(null, rowObj);
                 } catch (err) {
+                    console.error('[DB] LibSQL get error:', err.message);
                     if (callback) callback(err);
                 }
             })();
@@ -109,6 +118,7 @@ if (isVercel) {
                     
                     if (callback) callback(null, rows);
                 } catch (err) {
+                    console.error('[DB] LibSQL all error:', err.message);
                     if (callback) callback(err);
                 }
             })();
@@ -141,6 +151,7 @@ if (isVercel) {
                                 });
                             }
                         } catch (err) {
+                            console.error('[DB] LibSQL prepared run error:', err.message);
                             if (callback) callback(err);
                         }
                     })();

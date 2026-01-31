@@ -2,6 +2,13 @@
   "version": 2,
   "routes": [
     {
+      "src": "/(.*)\\.html",
+      "status": 301,
+      "headers": {
+        "Location": "/$1"
+      }
+    },
+    {
       "src": "/api/(.*)",
       "dest": "/api/index.js"
     },

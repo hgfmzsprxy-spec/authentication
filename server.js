@@ -3,6 +3,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const crypto = require('crypto');
+const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const http = require('http');
@@ -18,6 +19,7 @@ if (!process.env.VERCEL) {
 const db = require('./db-adapter');
 
 const app = express();
+const authPath = path.join(__dirname, 'auth');
 const PORT = 3000;
 
 console.log(`[Boot] CWD: ${process.cwd()}`);
@@ -82,6 +84,20 @@ app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 app.use(bodyParser.json({ limit: '50mb' })); // Increase limit for screenshot data
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
+
+// Clean URLs: map "/settings" -> "/settings.html" when the file exists
+app.use((req, res, next) => {
+    if (req.path.startsWith('/api')) return next();
+    if (req.path === '/') return next();
+    if (req.path.endsWith('.html')) return next();
+    if (path.extname(req.path)) return next();
+
+    const candidate = path.join(authPath, `${req.path}.html`);
+    if (fs.existsSync(candidate)) {
+        req.url = `${req.path}.html`;
+    }
+    next();
+});
 
 // Log API requests to confirm they hit this server
 app.use('/api', (req, res, next) => {
@@ -4944,7 +4960,6 @@ app.use('/api', (req, res) => {
 
 // Static files (must be after all API routes to avoid conflicts)
 // Use absolute path for Vercel compatibility
-const authPath = path.join(__dirname, 'auth');
 app.use(express.static(authPath));
 
 // Only start server if not in Vercel (serverless environment)

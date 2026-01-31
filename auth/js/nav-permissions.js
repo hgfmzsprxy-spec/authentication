@@ -85,12 +85,19 @@
         method: 'POST',
         credentials: 'include'
       });
+      
+      const data = await response.json().catch(() => ({}));
+      
       if (response.ok) {
         // Reload page to remove warning
         window.location.reload();
+      } else {
+        console.error('Error confirming warn:', data.error || 'Unknown error');
+        alert('Error confirming warning: ' + (data.error || 'Unknown error'));
       }
     } catch (error) {
       console.error('Error confirming warn:', error);
+      alert('Error confirming warning. Please try again.');
     }
   };
 

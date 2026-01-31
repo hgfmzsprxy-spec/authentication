@@ -3117,11 +3117,13 @@ app.delete('/api/licenses/:license_key', (req, res) => {
                     return res.status(404).json({ error: 'License not found' });
                 }
                 
-                db.run('DELETE FROM licenses WHERE license_key = ?', [license_key], function(err) {
+                db.run('DELETE FROM licenses WHERE license_key = ?', [license_key], function(err, result) {
                     if (err) {
+                        console.error('[DELETE /api/licenses/:license_key] Admin delete error:', err);
                         return res.status(500).json({ error: err.message });
                     }
-                    if (this.changes === 0) {
+                    const changes = (result && result.changes) || (this && this.changes) || 0;
+                    if (changes === 0) {
                         return res.status(404).json({ error: 'License not found' });
                     }
                     logAdminActivity(req.session.userId, 'license_delete', `Deleted license`, license_key, info?.app_id);
@@ -3140,11 +3142,21 @@ app.delete('/api/licenses/:license_key', (req, res) => {
                 }
 
                 db.get('SELECT l.app_id, a.name as app_name FROM licenses l LEFT JOIN applications a ON l.app_id = a.app_id WHERE l.license_key = ? AND l.created_by = ?', [license_key, req.session.userId], (infoErr, info) => {
-                    db.run('DELETE FROM licenses WHERE license_key = ? AND created_by = ?', [license_key, req.session.userId], function(err) {
+                    if (infoErr) {
+                        console.error('[DELETE /api/licenses/:license_key] Get license info error:', infoErr);
+                        return res.status(500).json({ error: 'Database error' });
+                    }
+                    if (!info) {
+                        return res.status(404).json({ error: 'License not found' });
+                    }
+                    
+                    db.run('DELETE FROM licenses WHERE license_key = ? AND created_by = ?', [license_key, req.session.userId], function(err, result) {
                         if (err) {
+                            console.error('[DELETE /api/licenses/:license_key] User delete error:', err);
                             return res.status(500).json({ error: err.message });
                         }
-                        if (this.changes === 0) {
+                        const changes = (result && result.changes) || (this && this.changes) || 0;
+                        if (changes === 0) {
                             return res.status(404).json({ error: 'License not found' });
                         }
                         logAdminActivity(req.session.userId, 'license_delete', `Deleted license`, license_key, info?.app_id);
@@ -3898,11 +3910,13 @@ app.post('/api/auth/confirm-warn', (req, res) => {
     db.run(
         'UPDATE users SET warn_confirmed = 1, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
         [req.session.userId],
-        function(updateErr) {
+        function(updateErr, result) {
             if (updateErr) {
+                console.error('[POST /api/auth/confirm-warn] Database error:', updateErr);
                 return res.status(500).json({ error: 'Database error' });
             }
-            if (this.changes === 0) {
+            const changes = (result && result.changes) || (this && this.changes) || 0;
+            if (changes === 0) {
                 return res.status(404).json({ error: 'User not found' });
             }
             return res.json({ success: true, message: 'Warning confirmed' });

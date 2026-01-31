@@ -109,31 +109,44 @@ app.use('/api', (req, res, next) => {
 function getUserIdFromRequest(req) {
     // Try session first
     if (req.session && req.session.userId) {
+        console.log('[getUserIdFromRequest] Found userId in session:', req.session.userId);
         return req.session.userId;
     }
     
     // In Vercel, check userId cookie as fallback
-    // Restore userId from cookie if:
-    // 1. userId cookie exists
-    // 2. session cookie exists (means session is active, even if new/empty)
-    // This handles cases where session was created but userId was lost (cold start, etc.)
+    // Restore userId from cookie if userId cookie exists
+    // Session cookie may not exist yet on first request after login, so we check userId cookie first
     if (process.env.VERCEL) {
-        const userId = req.cookies?.userId;
+        // Check both regular cookies and signed cookies
+        const userId = req.cookies?.userId || req.signedCookies?.userId;
         const sessionCookie = req.cookies?.['auth.sid'] || req.signedCookies?.['auth.sid'];
         
-        // If userId cookie exists and session cookie exists, restore userId to session
-        // This means user is logged in (has userId cookie) and has active session
-        if (userId && sessionCookie) {
+        console.log('[getUserIdFromRequest] Vercel mode - checking cookies');
+        console.log('[getUserIdFromRequest] userId from req.cookies:', req.cookies?.userId);
+        console.log('[getUserIdFromRequest] userId from req.signedCookies:', req.signedCookies?.userId);
+        console.log('[getUserIdFromRequest] userId cookie (final):', userId);
+        console.log('[getUserIdFromRequest] sessionCookie exists:', !!sessionCookie);
+        console.log('[getUserIdFromRequest] req.session exists:', !!req.session);
+        console.log('[getUserIdFromRequest] req.session.userId:', req.session?.userId);
+        console.log('[getUserIdFromRequest] All cookies:', Object.keys(req.cookies || {}));
+        console.log('[getUserIdFromRequest] All signedCookies:', Object.keys(req.signedCookies || {}));
+        console.log('[getUserIdFromRequest] Raw cookie header:', req.headers.cookie);
+        
+        // If userId cookie exists, restore userId to session
+        // This handles the case where user just logged in and cookie is set but session doesn't have userId yet
+        if (userId) {
             // Ensure session exists
             if (!req.session) {
                 req.session = {};
             }
             // Restore userId to session
-            req.session.userId = parseInt(userId);
-            return parseInt(userId);
+            const parsedUserId = parseInt(userId);
+            req.session.userId = parsedUserId;
+            console.log('[getUserIdFromRequest] Restored userId from cookie to session:', parsedUserId);
+            return parsedUserId;
         }
-        // If userId cookie doesn't exist or session cookie doesn't exist,
-        // user is not logged in (logged out or never logged in)
+        // If userId cookie doesn't exist, user is not logged in
+        console.log('[getUserIdFromRequest] No userId cookie found, user not authenticated');
     }
     
     return null;

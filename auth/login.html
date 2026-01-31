@@ -289,10 +289,31 @@
                     
                     if (data.success) {
                         showSuccess('Login successful! Redirecting...');
+                        // Wait longer to ensure cookies are set in browser before redirect
                         setTimeout(() => {
-                            // Use replace to avoid back button issues and ensure fresh page load
-                            window.location.replace('application.html');
-                        }, 1000);
+                            // Verify we're still logged in before redirecting
+                            fetch(`${API_URL}/auth/me`, {
+                                credentials: 'include'
+                            })
+                            .then(response => response.json())
+                            .then(authData => {
+                                if (authData.loggedIn) {
+                                    // Use replace to avoid back button issues and ensure fresh page load
+                                    window.location.replace('application.html');
+                                } else {
+                                    console.error('Auth check failed after login, retrying...');
+                                    // Retry after another second
+                                    setTimeout(() => {
+                                        window.location.replace('application.html');
+                                    }, 1000);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error checking auth:', error);
+                                // Still redirect even if check fails
+                                window.location.replace('application.html');
+                            });
+                        }, 2000);
                     } else {
                         showError(data.error || 'Invalid email or password');
                     }

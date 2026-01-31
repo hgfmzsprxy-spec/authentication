@@ -117,6 +117,38 @@ if (isVercel) {
             // LibSQL doesn't have serialize, just execute callback
             if (callback) callback();
         },
+
+        prepare: function(sql) {
+            // Minimal prepare shim for LibSQL to support stmt.run(...)
+            return {
+                run: function(params, callback) {
+                    if (typeof params === 'function') {
+                        callback = params;
+                        params = [];
+                    }
+                    if (!params) params = [];
+                    (async () => {
+                        try {
+                            const result = await client.execute({
+                                sql: sql,
+                                args: params
+                            });
+                            if (callback) {
+                                callback(null, {
+                                    changes: result.rowsAffected || 0,
+                                    lastID: result.lastInsertRowid || 0
+                                });
+                            }
+                        } catch (err) {
+                            if (callback) callback(err);
+                        }
+                    })();
+                },
+                finalize: function(callback) {
+                    if (callback) callback(null);
+                }
+            };
+        },
         
         close: function(callback) {
             (async () => {
